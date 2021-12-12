@@ -6,7 +6,7 @@
 /*   By: nnamor <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 15:51:52 by nnamor            #+#    #+#             */
-/*   Updated: 2021/12/12 09:29:49 by nnamor           ###   ########.fr       */
+/*   Updated: 2021/12/12 10:20:57 by nnamor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 #define VECTOR_H_
 
 #include <memory>
-#include <cstddef>
 #include <stdexcept>
 #include <new>
+
+#include <cstddef>
+#include <cstring>
 
 #include "iterator.hpp"
 #include "type_traits.hpp"
@@ -352,7 +354,7 @@ vector<T, Allocator>::max_size() const
 template <class T, class Allocator>
 inline void vector<T, Allocator>::reserve(size_type new_cap)
 {
-	if (new_cap > capacity_) realloc(new_cap);
+	if (new_cap > capacity_) realloc_(new_cap);
 }
 
 template <class T, class Allocator>
@@ -390,8 +392,7 @@ inline void vector<T, Allocator>::realloc_(vector<T, Allocator>::size_type count
 	}
 	try {
 		pointer tmp_arr = alloc_.allocate(count);
-		for (size_type i = 0; i < size_; ++i)
-			tmp_arr[i] = arr_[i];
+		std::memcpy(tmp_arr, arr_, sizeof(value_type) * size_);
 		alloc_.deallocate(arr_, capacity_);
 		arr_ = tmp_arr;
 		capacity_ = count;
