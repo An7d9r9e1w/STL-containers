@@ -6,7 +6,7 @@
 /*   By: nnamor <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 12:21:13 by nnamor            #+#    #+#             */
-/*   Updated: 2021/12/11 18:54:35 by nnamor           ###   ########.fr       */
+/*   Updated: 2021/12/12 11:45:33 by nnamor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ struct iterator_traits<const T*>
 
 /// Random-access iterator
 template <class T>
-class RAIterator : public iterator<random_access_iterator_tag, T>
+class wrap_iter : public iterator<random_access_iterator_tag, T>
 {
 public:
 	typedef typename iterator<random_access_iterator_tag, T>::iterator_category	iterator_category;
@@ -83,12 +83,12 @@ public:
 	typedef typename iterator<random_access_iterator_tag, T>::reference			reference;
 
 public:
-	RAIterator(pointer ptr);
-	RAIterator(const RAIterator& rai);
-	~RAIterator();
+	wrap_iter(pointer ptr);
+	wrap_iter(const wrap_iter& rai);
+	~wrap_iter();
 
 public:
-	RAIterator&		operator=(const RAIterator& rai);
+	wrap_iter&		operator=(const wrap_iter& rai);
 
 	reference		operator*();
 	const reference	operator*() const;
@@ -97,36 +97,36 @@ public:
 	reference		operator[](difference_type n);
 	const reference	operator[](difference_type n) const;
 
-	RAIterator&		operator++();
-	RAIterator		operator++(int);
-	RAIterator&		operator--();
-	RAIterator		operator--(int);
-	RAIterator&		operator+=(difference_type n);
-	RAIterator&		operator-=(difference_type n);
-	RAIterator		operator+(difference_type n) const;
-	RAIterator		operator-(difference_type n) const;
+	wrap_iter&		operator++();
+	wrap_iter		operator++(int);
+	wrap_iter&		operator--();
+	wrap_iter		operator--(int);
+	wrap_iter&		operator+=(difference_type n);
+	wrap_iter&		operator-=(difference_type n);
+	wrap_iter		operator+(difference_type n) const;
+	wrap_iter		operator-(difference_type n) const;
 
 	template <class U>
-	friend RAIterator<U> operator+(typename RAIterator<U>::difference_type n,
-		const RAIterator<U>& it);
+	friend wrap_iter<U> operator+(typename wrap_iter<U>::difference_type n,
+		const wrap_iter<U>& it);
 
 	template <class U>
-	friend typename RAIterator<U>::difference_type operator-(
-		const RAIterator<U>& lhs,
-		const RAIterator<U>& rhs);
+	friend typename wrap_iter<U>::difference_type operator-(
+		const wrap_iter<U>& lhs,
+		const wrap_iter<U>& rhs);
 
 	template <class U>
-	friend bool		operator==(const RAIterator<U>& a, const RAIterator<U>& b);
+	friend bool		operator==(const wrap_iter<U>& a, const wrap_iter<U>& b);
 	template <class U>
-	friend bool		operator!=(const RAIterator<U>& a, const RAIterator<U>& b);
+	friend bool		operator!=(const wrap_iter<U>& a, const wrap_iter<U>& b);
 	template <class U>
-	friend bool		operator<(const RAIterator<U>& a, const RAIterator<U>& b);
+	friend bool		operator<(const wrap_iter<U>& a, const wrap_iter<U>& b);
 	template <class U>
-	friend bool		operator>(const RAIterator<U>& a, const RAIterator<U>& b);
+	friend bool		operator>(const wrap_iter<U>& a, const wrap_iter<U>& b);
 	template <class U>
-	friend bool		operator<=(const RAIterator<U>& a, const RAIterator<U>& b);
+	friend bool		operator<=(const wrap_iter<U>& a, const wrap_iter<U>& b);
 	template <class U>
-	friend bool		operator>=(const RAIterator<U>& a, const RAIterator<U>& b);
+	friend bool		operator>=(const wrap_iter<U>& a, const wrap_iter<U>& b);
 
 
 private:
@@ -135,7 +135,7 @@ private:
 
 /// Node iterator
 /*template <class T>
-class RAIterator : public iterator<random_access_iterator_tag, T>
+class wrap_iter : public iterator<random_access_iterator_tag, T>
 {
 public:
 	typedef typename iterator<random_access_iterator_tag, T>::iterator_category	iterator_category;
@@ -144,25 +144,25 @@ public:
 	typedef typename iterator<random_access_iterator_tag, T>::pointer			pointer;
 	typedef typename iterator<random_access_iterator_tag, T>::reference			reference;
 public:
-	RAIterator(pointer ptr);
-	RAIterator(const RAIterator& rai);
-	~RAIterator();
+	wrap_iter(pointer ptr);
+	wrap_iter(const wrap_iter& rai);
+	~wrap_iter();
 
 public:
-	RAIterator&			operator=(const RAIterator& rai);
+	wrap_iter&			operator=(const wrap_iter& rai);
 
-	bool				operator==(const RAIterator& rai) const;
-	bool				operator!=(const RAIterator& rai) const;
+	bool				operator==(const wrap_iter& rai) const;
+	bool				operator!=(const wrap_iter& rai) const;
 
 	value_type&			operator*();
 	const value_type&	operator*() const;
 	value_type&			operator->();
 	const value_type&	operator->() const;
 
-	RAIterator&			operator++();
-	RAIterator			operator++(int);
-	RAIterator&			operator--();
-	RAIterator			operator--(int);
+	wrap_iter&			operator++();
+	wrap_iter			operator++(int);
+	wrap_iter&			operator--();
+	wrap_iter			operator--(int);
 
 private:
 	pointer ptr_;
@@ -238,18 +238,18 @@ protected:
 
 /// Random-access iterator
 template <class T>
-RAIterator<T>::RAIterator(pointer ptr)
+wrap_iter<T>::wrap_iter(pointer ptr)
 	: ptr_(ptr) {}
 
 template <class T>
-RAIterator<T>::RAIterator(const RAIterator& rai)
+wrap_iter<T>::wrap_iter(const wrap_iter& rai)
 	: ptr_(rai.ptr_) {}
 
 template <class T>
-RAIterator<T>::~RAIterator() {}
+wrap_iter<T>::~wrap_iter() {}
 
 template <class T>
-inline RAIterator<T>& RAIterator<T>::operator=(const RAIterator& rai)
+inline wrap_iter<T>& wrap_iter<T>::operator=(const wrap_iter& rai)
 {
 	if (this != &rai) {
 		ptr_ = rai.ptr_;
@@ -258,156 +258,156 @@ inline RAIterator<T>& RAIterator<T>::operator=(const RAIterator& rai)
 }
 
 template <class T>
-inline bool operator==(const RAIterator<T>& a, const RAIterator<T>& b)
+inline bool operator==(const wrap_iter<T>& a, const wrap_iter<T>& b)
 {
 	return a.ptr_ == b.ptr_;
 }
 
 template <class T>
-inline bool operator!=(const RAIterator<T>& a, const RAIterator<T>& b)
+inline bool operator!=(const wrap_iter<T>& a, const wrap_iter<T>& b)
 {
 	return a.ptr_ != b.ptr_;
 }
 
 template <class T>
-inline bool operator<(const RAIterator<T>& a, const RAIterator<T>& b)
+inline bool operator<(const wrap_iter<T>& a, const wrap_iter<T>& b)
 {
 	return a.ptr_ < b.ptr_;
 }
 
 template <class T>
-inline bool operator>(const RAIterator<T>& a, const RAIterator<T>& b)
+inline bool operator>(const wrap_iter<T>& a, const wrap_iter<T>& b)
 {
 	return a.ptr_ > b.ptr_;
 }
 
 template <class T>
-inline bool operator<=(const RAIterator<T>& a, const RAIterator<T>& b)
+inline bool operator<=(const wrap_iter<T>& a, const wrap_iter<T>& b)
 {
 	return a.ptr_ <= b.ptr_;
 }
 
 template <class T>
-inline bool operator>=(const RAIterator<T>& a, const RAIterator<T>& b)
+inline bool operator>=(const wrap_iter<T>& a, const wrap_iter<T>& b)
 {
 	return a.ptr_ >= b.ptr_;
 }
 
 template <class T>
-inline typename RAIterator<T>::reference
-RAIterator<T>::operator*()
+inline typename wrap_iter<T>::reference
+wrap_iter<T>::operator*()
 {
 	return *ptr_;
 }
 
 template <class T>
-inline const typename RAIterator<T>::reference
-RAIterator<T>::operator*() const
+inline const typename wrap_iter<T>::reference
+wrap_iter<T>::operator*() const
 {
 	return *ptr_;
 }
 
 template <class T>
-inline typename RAIterator<T>::pointer
-RAIterator<T>::operator->()
+inline typename wrap_iter<T>::pointer
+wrap_iter<T>::operator->()
 {
 	return ptr_;
 }
 
 template <class T>
-inline const typename RAIterator<T>::pointer
-RAIterator<T>::operator->() const
+inline const typename wrap_iter<T>::pointer
+wrap_iter<T>::operator->() const
 {
 	return ptr_;
 }
 
 template <class T>
-inline typename RAIterator<T>::reference
-RAIterator<T>::operator[](RAIterator<T>::difference_type n)
+inline typename wrap_iter<T>::reference
+wrap_iter<T>::operator[](wrap_iter<T>::difference_type n)
 {
 	return ptr_[n];
 }
 
 template <class T>
-inline const typename RAIterator<T>::reference
-RAIterator<T>::operator[](RAIterator<T>::difference_type n) const
+inline const typename wrap_iter<T>::reference
+wrap_iter<T>::operator[](wrap_iter<T>::difference_type n) const
 {
 	return ptr_[n];
 }
 
 template <class T>
-inline RAIterator<T>& RAIterator<T>::operator++()
+inline wrap_iter<T>& wrap_iter<T>::operator++()
 {
 	++ptr_;
 	return *this;
 }
 
 template <class T>
-inline RAIterator<T> RAIterator<T>::operator++(int)
+inline wrap_iter<T> wrap_iter<T>::operator++(int)
 {
-	RAIterator<T> tmp = *this;
+	wrap_iter<T> tmp = *this;
 	++ptr_;
 	return tmp;
 }
 
 template <class T>
-inline RAIterator<T>& RAIterator<T>::operator--()
+inline wrap_iter<T>& wrap_iter<T>::operator--()
 {
 	--ptr_;
 	return *this;
 }
 
 template <class T>
-inline RAIterator<T> RAIterator<T>::operator--(int)
+inline wrap_iter<T> wrap_iter<T>::operator--(int)
 {
-	RAIterator<T> tmp = *this;
+	wrap_iter<T> tmp = *this;
 	++ptr_;
 	return tmp;
 }
 
 template <class T>
-inline RAIterator<T>& RAIterator<T>::operator+=(typename RAIterator<T>::difference_type n)
+inline wrap_iter<T>& wrap_iter<T>::operator+=(typename wrap_iter<T>::difference_type n)
 {
 	ptr_ += n;
 	return *this;
 }
 
 template <class T>
-inline RAIterator<T>& RAIterator<T>::operator-=(typename RAIterator<T>::difference_type n)
+inline wrap_iter<T>& wrap_iter<T>::operator-=(typename wrap_iter<T>::difference_type n)
 {
 	ptr_ -= n;
 	return *this;
 }
 
 template <class T>
-inline RAIterator<T> RAIterator<T>::operator+(typename RAIterator<T>::difference_type n) const
+inline wrap_iter<T> wrap_iter<T>::operator+(typename wrap_iter<T>::difference_type n) const
 {
-	RAIterator<T> result(*this);
+	wrap_iter<T> result(*this);
 	result.ptr_ += n;
 	return result;
 }
 
 template <class T>
-inline RAIterator<T> RAIterator<T>::operator-(typename RAIterator<T>::difference_type n) const
+inline wrap_iter<T> wrap_iter<T>::operator-(typename wrap_iter<T>::difference_type n) const
 {
-	RAIterator<T> result(*this);
+	wrap_iter<T> result(*this);
 	result.ptr_ -= n;
 	return result;
 }
 
 template <class T>
-inline RAIterator<T> operator+(typename RAIterator<T>::difference_type n,
-	const RAIterator<T>& it)
+inline wrap_iter<T> operator+(typename wrap_iter<T>::difference_type n,
+	const wrap_iter<T>& it)
 {
-	RAIterator<T> result(it);
+	wrap_iter<T> result(it);
 	result.ptr_ += n;
 	return result;
 }
 
 template <class T>
-inline typename RAIterator<T>::difference_type operator-(
-	const RAIterator<T>& lhs,
-	const RAIterator<T>& rhs)
+inline typename wrap_iter<T>::difference_type operator-(
+	const wrap_iter<T>& lhs,
+	const wrap_iter<T>& rhs)
 {
 	return lhs.ptr_ - rhs.ptr_;
 }

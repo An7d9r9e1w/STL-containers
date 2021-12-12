@@ -262,6 +262,11 @@ Conclusions:
 		https://en.cppreference.com/w/cpp/container/vector/max_size
 
 
+1.12	Insert
+	- single
+		position in [begin, end], otherwise undefined behavior or segfault 
+
+	- data may be copied into allocated memory without construct
 
 
 

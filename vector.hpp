@@ -6,7 +6,7 @@
 /*   By: nnamor <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 15:51:52 by nnamor            #+#    #+#             */
-/*   Updated: 2021/12/12 10:20:57 by nnamor           ###   ########.fr       */
+/*   Updated: 2021/12/12 17:57:09 by nnamor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include "iterator.hpp"
 #include "type_traits.hpp"
 
+
+
 namespace ft
 {
 
@@ -36,9 +38,9 @@ public:
 	typedef typename allocator_type::const_reference					const_reference;
 	typedef typename allocator_type::pointer							pointer;
 	typedef typename allocator_type::const_pointer						const_pointer;
-	typedef 		 ft::RAIterator<value_type>							iterator;
+	typedef 		 ft::wrap_iter<value_type>							iterator;
 //	typedef			 ft::iterator_traits<pointer>						iterator;
-	typedef 		 ft::RAIterator<const value_type>					const_iterator;
+	typedef 		 ft::wrap_iter<const value_type>					const_iterator;
 //	typedef			 ft::iterator_traits<const_pointer>					const_iterator;
 	typedef 		 ft::reverse_iterator<iterator>						reverse_iterator;
 	typedef 		 ft::reverse_iterator<const_iterator>				const_reverse_iterator;
@@ -106,8 +108,11 @@ public:
 	size_type		capacity() const;
 
 	/// modifiers
-	void	clear();
-	void	resize(size_type count, value_type value = value_type());
+	void			clear();
+	iterator		insert(iterator pos, const value_type& value);
+	void			insert(iterator pos, size_type count, const T& value);
+
+	void			resize(size_type count, value_type value = value_type());
 
 private:
 	void	realloc_(size_type count);
@@ -171,7 +176,7 @@ vector<T, Allocator>::~vector()
 }
 
 template <class T, class Allocator>
-inline vector<T, Allocator>& vector<T, Allocator>::operator=(const vector& other)
+vector<T, Allocator>& vector<T, Allocator>::operator=(const vector& other)
 {
 	if (this != &other) {
 		clear();
@@ -186,7 +191,7 @@ inline vector<T, Allocator>& vector<T, Allocator>::operator=(const vector& other
 
 template <class T, class Allocator>
 	template <class InputIterator>
-inline void vector<T, Allocator>::assign(InputIterator first, InputIterator last,
+void vector<T, Allocator>::assign(InputIterator first, InputIterator last,
 	typename enable_if<is_iterator<InputIterator>::value, bool>::type)
 {
 	size_type n = 0;
@@ -216,21 +221,21 @@ vector<T, Allocator>::get_allocator() const
 
 template <class T, class Allocator>
 inline typename vector<T, Allocator>::reference
-vector<T, Allocator>::operator[](typename vector<T, Allocator>::size_type pos)
+vector<T, Allocator>::operator[](size_type pos)
 {
 	return arr_[pos];
 }
 
 template <class T, class Allocator>
 inline typename vector<T, Allocator>::const_reference
-vector<T, Allocator>::operator[](typename vector<T, Allocator>::size_type pos) const
+vector<T, Allocator>::operator[](size_type pos) const
 {
 	return arr_[pos];
 }
 
 template <class T, class Allocator>
 inline typename vector<T, Allocator>::reference
-vector<T, Allocator>::at(typename vector<T, Allocator>::size_type pos)
+vector<T, Allocator>::at(size_type pos)
 {
 	if (pos >= size_) throw std::out_of_range("vector");
 	return arr_[pos];
@@ -238,7 +243,7 @@ vector<T, Allocator>::at(typename vector<T, Allocator>::size_type pos)
 
 template <class T, class Allocator>
 inline typename vector<T, Allocator>::const_reference
-vector<T, Allocator>::at(typename vector<T, Allocator>::size_type pos) const
+vector<T, Allocator>::at(size_type pos) const
 {
 	if (pos >= size_) throw std::out_of_range("vector");
 	return arr_[pos];
@@ -373,8 +378,48 @@ inline void vector<T, Allocator>::clear()
 }
 
 template <class T, class Allocator>
-inline void vector<T, Allocator>::resize(vector<T, Allocator>::size_type count,
-	vector<T, Allocator>::value_type value)
+typename vector<T, Allocator>::iterator
+vector<T, Allocator>::insert(iterator pos, const value_type& value)
+{
+	difference_type shift = &*pos - arr_;
+	if (!capacity_) {
+		realloc_(1);
+	}
+	else if (size_ + 1 > capacity_) {
+		realloc_(capacity_ << 1);
+	}
+	pointer target = arr_ + shift;
+	std::memmove(target + 1, target, sizeof(value_type) * (size_++ - shift));
+//	pointer cp = alloc_.allocate(1);
+//	alloc_.construct(cp, value);
+//	std::memcpy(target, cp, sizeof(value_type));
+//	alloc_.deallocate(cp, 1);
+	alloc_.construct(target, value);
+	return iterator(target);
+}
+
+template <class T, class Allocator>
+void vector<T, Allocator>::insert(iterator pos, size_type count, const T& value)
+{
+	difference_type shift = &*pos - arr_;
+	if (!capacity_) {
+		realloc_(count);
+	}
+	else if (size_ + count > capacity_) {
+		if (size_ + count > (capacity_ << 1))
+			realloc_(size_ + count);
+		else
+			realloc_(capacity_ << 1);
+	}
+	pointer target = arr_ + shift;
+	std::memmove(target + count, target, sizeof(value_type) * (size_ - shift));
+	for (size_type i = 0; i < count; ++i)
+		alloc_.construct(target + i, value);
+	size_ += count;
+}
+
+template <class T, class Allocator>
+void vector<T, Allocator>::resize(size_type count, value_type value)
 {
 	if (count > capacity_) realloc_(count);
 	while (size_ > count)
@@ -384,7 +429,7 @@ inline void vector<T, Allocator>::resize(vector<T, Allocator>::size_type count,
 }
 
 template <class T, class Allocator>
-inline void vector<T, Allocator>::realloc_(vector<T, Allocator>::size_type count)
+inline void vector<T, Allocator>::realloc_(size_type count)
 {
 	if (count > max_size()) {
 		destroy_();
