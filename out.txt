@@ -1,0 +1,68 @@
+********[INT]*********
+
+[Default]
+[STD]
+10000000 10000000
+time = 0.084195 s
+[FT]
+10000000 10000000
+time = 0.025894 s
+
+[Fill]
+[STD]
+69 69 10000000 10000000
+time = 0.103128 s
+[FT]
+69 69 10000000 10000000
+time = 0.026142 s
+
+[Range]
+[STD]
+69 69 10000000 10000000
+time = 0.016544 s
+[FT]
+69 69 10000000 10000000
+time = 0.041338 s
+
+[Copy]
+[STD]
+69 69 10000000 10000000
+time = 0.006209 s
+[FT]
+69 69 10000000 10000000
+time = 0.035473 s
+
+
+********[STRING]*********
+
+[Default]
+[STD]
+10000000 10000000
+time = 0.100271 s
+[FT]
+10000000 10000000
+time = 0.028173 s
+
+[Fill]
+[STD]
+Hello, world! Hello, world! 10000000 10000000
+time = 0.105447 s
+[FT]
+Hello, world! Hello, world! 10000000 10000000
+time = 0.028046 s
+
+[Range]
+[STD]
+Hello, world! Hello, world! 10000000 10000000
+time = 0.032732 s
+[FT]
+Hello, world! Hello, world! 10000000 10000000
+time = 0.046051 s
+
+[Copy]
+[STD]
+Hello, world! Hello, world! 10000000 10000000
+time = 0.011193 s
+[FT]
+Hello, world! Hello, world! 10000000 10000000
+time = 0.038245 s
