@@ -16,6 +16,7 @@
 #include <memory>
 #include <stdexcept>
 #include <new>
+#include <limits>
 
 #include <cstddef>
 #include <cstring>
@@ -131,7 +132,7 @@ private:
 template <class T, class Allocator>
 vector<T, Allocator>::vector (const allocator_type& alloc)
 	: alloc_(alloc),
-	arr_(nullptr),
+	arr_(NULL),
 	size_(0),
 	capacity_(0)
 {
@@ -140,7 +141,7 @@ vector<T, Allocator>::vector (const allocator_type& alloc)
 template <class T, class Allocator>
 vector<T, Allocator>::vector (size_type n, const value_type& val, const allocator_type& alloc)
 	: alloc_(alloc),
-	arr_(nullptr),
+	arr_(NULL),
 	size_(0),
 	capacity_(0)
 {
@@ -152,7 +153,7 @@ template <class T, class Allocator>
 vector<T, Allocator>::vector (InputIterator first, InputIterator last, const allocator_type& alloc,
 	typename enable_if<is_iterator<InputIterator>::value, bool>::type)
 	: alloc_(alloc),
-	arr_(nullptr),
+	arr_(NULL),
 	size_(0),
 	capacity_(0)
 {
@@ -162,7 +163,7 @@ vector<T, Allocator>::vector (InputIterator first, InputIterator last, const all
 template <class T, class Allocator>
 vector<T, Allocator>::vector (const vector& x)
 	: alloc_(x.alloc_),
-	arr_(nullptr),
+	arr_(NULL),
 	size_(0),
 	capacity_(0)
 {
@@ -453,7 +454,7 @@ inline void vector<T, Allocator>::destroy_()
 {
 	clear();
 	alloc_.deallocate(arr_, capacity_);
-	arr_ = nullptr;
+	arr_ = NULL;
 	capacity_ = 0;
 }
 

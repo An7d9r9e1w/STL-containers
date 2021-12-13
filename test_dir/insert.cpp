@@ -11,6 +11,18 @@
 
 #define SIZE 1000000
 
+enum testType
+{
+	ERROR,
+	SINGLE,
+	SINGLE_TIME,
+	SINGLE_ALL,
+	FILL,
+	FILL_TIME,
+	FILL_ALL,
+	ALL_TIME
+};
+
 struct IntPtr
 {
 	IntPtr(const int n = 96) : ptr_(new int(n)) {}
@@ -69,8 +81,8 @@ void printTestLabel2(const std::string& test_name, const std::string& prompt, si
 
 
 /// single insert
-template <class T, class Vector>
-void singleInsertTest(const std::string& prompt, size_t size, size_t cap, ssize_t pos, const T& value)
+template <class Vector>
+void singleInsertTest(const std::string& prompt, size_t size, size_t cap, ssize_t pos, const int value)
 {
 	try {
 		printTestLabel("SINGLE", prompt, size, cap, pos);
@@ -78,15 +90,14 @@ void singleInsertTest(const std::string& prompt, size_t size, size_t cap, ssize_
 		if (size > cap) throw std::runtime_error("size > capacity");
 		if (pos < 0 || pos > size) throw std::runtime_error("invalid position");
 
-		T* arr = new T[size];
-		T tmp = T();
+		int* arr = new int[size];
 		for (size_t i = 0; i < size; ++i)
-			arr[i] = ++tmp;
-		delete[] arr;
+			arr[i] = i + 1;
 
 		Vector v;
 		v.reserve(cap);
 		v.assign(arr, arr + size);
+		delete[] arr;
 
 		checkprint(v);
 
@@ -101,23 +112,23 @@ void singleInsertTest(const std::string& prompt, size_t size, size_t cap, ssize_
 
 void singleInsertTests(const std::string& stdv, const std::string& ftv)
 {
-	singleInsertTest<int, std::vector<int> >(stdv, 5, 10, 0, 69);
-	singleInsertTest<int, ft::vector<int> >(ftv, 5, 10, 0, 69);
-	singleInsertTest<int, std::vector<int> >(stdv, 5, 10, 3, 69);
-	singleInsertTest<int, ft::vector<int> >(ftv, 5, 10, 3, 69);
-	singleInsertTest<int, std::vector<int> >(stdv, 5, 10, 5, 69);
-	singleInsertTest<int, ft::vector<int> >(ftv, 5, 10, 5, 69);
-//	singleInsertTest<int, std::vector<int> >(stdv, 5, 10, 6, 69);	segfault
+	singleInsertTest<std::vector<int> >(stdv, 5, 10, 0, 69);
+	singleInsertTest<ft::vector<int> >(ftv, 5, 10, 0, 69);
+	singleInsertTest<std::vector<int> >(stdv, 5, 10, 3, 69);
+	singleInsertTest<ft::vector<int> >(ftv, 5, 10, 3, 69);
+	singleInsertTest<std::vector<int> >(stdv, 5, 10, 5, 69);
+	singleInsertTest<ft::vector<int> >(ftv, 5, 10, 5, 69);
+//	singleInsertTest<std::vector<int> >(stdv, 5, 10, 6, 69);	segfault
 
-	singleInsertTest<int, std::vector<int> >(stdv, 5, 5, 0, 69);
-	singleInsertTest<int, ft::vector<int> >(ftv, 5, 5, 0, 69);
-	singleInsertTest<int, std::vector<int> >(stdv, 5, 5, 3, 69);
-	singleInsertTest<int, ft::vector<int> >(ftv, 5, 5, 3, 69);
-	singleInsertTest<int, std::vector<int> >(stdv, 5, 5, 5, 69);
-	singleInsertTest<int, ft::vector<int> >(ftv, 5, 5, 5, 69);
+	singleInsertTest<std::vector<int> >(stdv, 5, 5, 0, 69);
+	singleInsertTest<ft::vector<int> >(ftv, 5, 5, 0, 69);
+	singleInsertTest<std::vector<int> >(stdv, 5, 5, 3, 69);
+	singleInsertTest<ft::vector<int> >(ftv, 5, 5, 3, 69);
+	singleInsertTest<std::vector<int> >(stdv, 5, 5, 5, 69);
+	singleInsertTest<ft::vector<int> >(ftv, 5, 5, 5, 69);
 
-	singleInsertTest<int, std::vector<int> >(stdv, 0, 0, 0, 69);
-	singleInsertTest<int, ft::vector<int> >(ftv, 0, 0, 0, 69);
+	singleInsertTest<std::vector<int> >(stdv, 0, 0, 0, 69);
+	singleInsertTest<ft::vector<int> >(ftv, 0, 0, 0, 69);
 }
 
 template <class T, class Vector>
@@ -149,13 +160,13 @@ void singleInsertTestsTime(const std::string& stdv, const std::string& ftv)
 
 
 /// fill insert
-template <class T, class Vector>
+template <class Vector>
 void fillInsertTest(const std::string& prompt,
 					size_t size,
 					size_t cap,
 					ssize_t pos,
 					size_t count,
-					const T& value)
+					const int value)
 {
 	try {
 		printTestLabel2("FILL", prompt, size, cap, pos, count);
@@ -163,15 +174,14 @@ void fillInsertTest(const std::string& prompt,
 		if (size > cap) throw std::runtime_error("size > capacity");
 		if (pos < 0 || pos > size) throw std::runtime_error("invalid position");
 
-		T* arr = new T[size];
-		T tmp = T();
+		int* arr = new int[size];
 		for (size_t i = 0; i < size; ++i)
-			arr[i] = ++tmp;
-		delete[] arr;
+			arr[i] = i + 1;
 
 		Vector v;
 		v.reserve(cap);
 		v.assign(arr, arr + size);
+		delete[] arr;
 
 		checkprint(v);
 
@@ -186,28 +196,28 @@ void fillInsertTest(const std::string& prompt,
 
 void fillInsertTests(const std::string& stdv, const std::string& ftv)
 {
-	fillInsertTest<int, std::vector<int> >(stdv, 5, 10, 0, 3, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 5, 10, 0, 3, 69);
-	fillInsertTest<int, std::vector<int> >(stdv, 5, 10, 3, 5, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 5, 10, 3, 5, 69);
-	fillInsertTest<int, std::vector<int> >(stdv, 5, 10, 5, 10, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 5, 10, 5, 10, 69);
-	fillInsertTest<int, std::vector<int> >(stdv, 5, 10, 5, 15, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 5, 10, 5, 15, 69);
-	fillInsertTest<int, std::vector<int> >(stdv, 5, 10, 5, 20, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 5, 10, 5, 20, 69);
+	fillInsertTest<std::vector<int> >(stdv, 5, 10, 0, 3, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 5, 10, 0, 3, 69);
+	fillInsertTest<std::vector<int> >(stdv, 5, 10, 3, 5, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 5, 10, 3, 5, 69);
+	fillInsertTest<std::vector<int> >(stdv, 5, 10, 5, 10, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 5, 10, 5, 10, 69);
+	fillInsertTest<std::vector<int> >(stdv, 5, 10, 5, 15, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 5, 10, 5, 15, 69);
+	fillInsertTest<std::vector<int> >(stdv, 5, 10, 5, 20, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 5, 10, 5, 20, 69);
 
-	fillInsertTest<int, std::vector<int> >(stdv, 5, 5, 0, 3, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 5, 5, 0, 3, 69);
-	fillInsertTest<int, std::vector<int> >(stdv, 5, 5, 3, 5, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 5, 5, 3, 5, 69);
-	fillInsertTest<int, std::vector<int> >(stdv, 5, 5, 5, 10, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 5, 5, 5, 10, 69);
+	fillInsertTest<std::vector<int> >(stdv, 5, 5, 0, 3, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 5, 5, 0, 3, 69);
+	fillInsertTest<std::vector<int> >(stdv, 5, 5, 3, 5, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 5, 5, 3, 5, 69);
+	fillInsertTest<std::vector<int> >(stdv, 5, 5, 5, 10, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 5, 5, 5, 10, 69);
 
-	fillInsertTest<int, std::vector<int> >(stdv, 0, 0, 0, 1, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 0, 0, 0, 1, 69);
-	fillInsertTest<int, std::vector<int> >(stdv, 0, 0, 0, 3, 69);
-	fillInsertTest<int, ft::vector<int> >(ftv, 0, 0, 0, 3, 69);
+	fillInsertTest<std::vector<int> >(stdv, 0, 0, 0, 1, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 0, 0, 0, 1, 69);
+	fillInsertTest<std::vector<int> >(stdv, 0, 0, 0, 3, 69);
+	fillInsertTest<ft::vector<int> >(ftv, 0, 0, 0, 3, 69);
 }
 
 template <class T, class Vector>
@@ -237,19 +247,65 @@ void fillInsertTestsTime(const std::string& stdv, const std::string& ftv)
 	fillInsertTestTime<IntPtr, ft::vector<IntPtr> >(ftv, SIZE, IntPtr());
 }
 
-
 /// main
-int main()
+
+testType getTestType(const char* arg)
+{
+	const std::string flags[] = {
+		"-s",
+		"-st",
+		"-sa",
+		"-f",
+		"-ft",
+		"-fa",
+		"-t"
+	};
+	const size_t size = sizeof(flags) / sizeof(std::string);
+
+	if (!arg) return ALL_TIME;
+
+	const std::string str(arg);
+	for (int i = 0; i < size; ++i) {
+		if (flags[i] == str) return static_cast<testType>(i);
+	}
+	return ERROR;
+}
+
+int main(int argc, char** argv)
 {
 	const std::string stdv("std::vector");
 	const std::string ftv("ft::vector");
 
-//	singleInsertTests(stdv, ftv);
-//	singleInsertTestsTime(stdv, ftv);
-
-//	fillInsertTests(stdv, ftv);
-	fillInsertTestsTime(stdv, ftv);
-
+	switch (getTestType(argv[1]))
+	{
+	case SINGLE:
+		singleInsertTests(stdv, ftv);
+		break;
+	case SINGLE_TIME:
+		singleInsertTestsTime(stdv, ftv);
+		break;
+	case SINGLE_ALL:
+		singleInsertTests(stdv, ftv);
+		singleInsertTestsTime(stdv, ftv);
+		break;
+	case FILL:
+		fillInsertTests(stdv, ftv);
+		break;
+	case FILL_TIME:
+		fillInsertTestsTime(stdv, ftv);
+		break;
+	case FILL_ALL:
+		fillInsertTests(stdv, ftv);
+		fillInsertTestsTime(stdv, ftv);
+		break;
+	case ALL_TIME:
+		singleInsertTestsTime(stdv, ftv);
+		fillInsertTestsTime(stdv, ftv);
+		break;
+	default:
+		std::cout << "flags: -s | -st | -sa | -f | -ft | -fa | -t\n";
+		return 1;
+	}
 	std::cout << "Press enter...";
 	std::getchar();
 	return 0;

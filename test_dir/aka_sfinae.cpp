@@ -6,7 +6,7 @@ struct test
 	template <class U>
 	static void foo(...) { std::cout << "test\n"; }
 	template <class U>
-	static void foo(typename U::type* = nullptr) { std::cout << "test::type\n"; }
+	static void foo(typename U::type* = NULL) { std::cout << "test::type\n"; }
 };
 
 struct A

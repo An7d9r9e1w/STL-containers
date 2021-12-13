@@ -57,8 +57,8 @@ struct is_integral_helper_ : public false_type {};
 
 template <> struct is_integral_helper_<bool> : public true_type {};
 template <> struct is_integral_helper_<char> : public true_type {};
-template <> struct is_integral_helper_<char16_t> : public true_type {};
-template <> struct is_integral_helper_<char32_t> : public true_type {};
+//template <> struct is_integral_helper_<char16_t> : public true_type {};
+//template <> struct is_integral_helper_<char32_t> : public true_type {};	// C++11
 template <> struct is_integral_helper_<wchar_t> : public true_type {};
 template <> struct is_integral_helper_<short> : public true_type {};
 template <> struct is_integral_helper_<int> : public true_type {};
@@ -94,7 +94,7 @@ struct has_iterator_category_
 private:
 	struct twoBytes_ { char b1_; char b2_; };
 	template <class U_> static twoBytes_ test_(...);
-	template <class U_> static char test_(typename U_::iterator_category* = nullptr);
+	template <class U_> static char test_(typename U_::iterator_category* = NULL);
 public:
 	static const bool value = sizeof(test_<T_>(0)) == 1;
 };

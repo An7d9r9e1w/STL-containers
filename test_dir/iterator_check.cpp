@@ -9,7 +9,7 @@ struct has_iterator_category_
 private:
 	struct twoBytes_ { char b1_; char b2_; };
 	template <class U_> static twoBytes_ test_(...);
-	template <class U_> static char test_(typename U_::iterator_category* = nullptr);
+	template <class U_> static char test_(typename U_::iterator_category* = NULL);
 public:
 	static const bool value = sizeof(test_<T_>(0)) == 1;
 };
