@@ -13,7 +13,7 @@
 
 enum testType
 {
-	ERROR,
+	ERROR = -1,
 	SINGLE,
 	SINGLE_TIME,
 	SINGLE_ALL,

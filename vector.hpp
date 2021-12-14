@@ -112,6 +112,8 @@ public:
 	void			clear();
 	iterator		insert(iterator pos, const value_type& value);
 	void			insert(iterator pos, size_type count, const T& value);
+	iterator		erase(iterator pos);
+	iterator		erase(iterator first, iterator last);
 
 	void			resize(size_type count, value_type value = value_type());
 
@@ -391,10 +393,6 @@ vector<T, Allocator>::insert(iterator pos, const value_type& value)
 	}
 	pointer target = arr_ + shift;
 	std::memmove(target + 1, target, sizeof(value_type) * (size_++ - shift));
-//	pointer cp = alloc_.allocate(1);
-//	alloc_.construct(cp, value);
-//	std::memcpy(target, cp, sizeof(value_type));
-//	alloc_.deallocate(cp, 1);
 	alloc_.construct(target, value);
 	return iterator(target);
 }
@@ -418,7 +416,56 @@ void vector<T, Allocator>::insert(iterator pos, size_type count, const T& value)
 		alloc_.construct(target + i, value);
 	size_ += count;
 }
+//TODO TEST
+template <class T, class Allocator>
+typename vector<T, Allocator>::iterator
+vector<T, Allocator>::erase(iterator pos)
+{
+	difference_type shift = &*pos - arr_;
+	//TODO check std::vector for	pos >= end()
+	if (shift == size_) return pos;
+	pointer target = &*pos;
+	alloc_.destroy(target);
+	std::memmove(target, target + 1, sizeof(value_type) * (--size_ - shift));
+	return pos;
+}
+/*
+	1 2 3 4 5
+	pos = 2
+	shift = 2
+	size - shift - 1 = 2
+	1 2 * 4 5
+	size = 4
 
+	-1	-> because pos is deleted
+	but |	last is out of delete range, so there is no -1
+		V
+*/
+//TODO TEST
+template <class T, class Allocator>
+typename vector<T, Allocator>::iterator
+vector<T, Allocator>::erase(iterator first, iterator last)
+{
+	difference_type shift = &*last - arr_;
+	//TODO
+	//if
+	pointer target = &*first;
+	size_type len = last - first;
+	for (size_type i = 0; i < len; ++i)
+		alloc_.destroy(target + i);
+	std::memmove(target, target + len, sizeof(value_type) * (size_ - shift));
+	size_ -= len;
+}
+/*
+	1 2 3 4 5 6 7
+	f = 2
+	l = 5
+	shift = 5
+	len = 3
+	size - shift = 2
+	1 2 * * * 5 7
+	size = 7 - 3 = 4
+*/
 template <class T, class Allocator>
 void vector<T, Allocator>::resize(size_type count, value_type value)
 {
