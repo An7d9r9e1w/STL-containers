@@ -121,24 +121,21 @@ public:
 	void		swap(vector& other);
 
 	/// non-member functions
-	template<class U, class Alloc>
-	bool operator==(const vector<U,Alloc>& lhs,
-					const vector<U,Alloc>& rhs);
-	template<class U, class Alloc>
-	bool operator!=(const vector<U,Alloc>& lhs,
-					const vector<U,Alloc>& rhs);
-	template<class U, class Alloc>
-	bool operator< (const vector<U,Alloc>& lhs,
-					const vector<U,Alloc>& rhs);
-	template<class U, class Alloc>
-	bool operator<=(const vector<U,Alloc>& lhs,
-					const vector<U,Alloc>& rhs);
-	template<class U, class Alloc>
-	bool operator> (const vector<U,Alloc>& lhs,
-					const vector<U,Alloc>& rhs);
-	template<class U, class Alloc>
-	bool operator>=(const vector<U,Alloc>& lhs,
-					const vector<U,Alloc>& rhs);
+	template <class U, class Alloc>
+	friend bool operator==(const vector<U,Alloc>& lhs, const vector<U,Alloc>& rhs);
+	template <class U, class Alloc>
+	friend bool operator!=(const vector<U,Alloc>& lhs, const vector<U,Alloc>& rhs);
+	template <class U, class Alloc>
+	friend bool operator< (const vector<U,Alloc>& lhs, const vector<U,Alloc>& rhs);
+	template <class U, class Alloc>
+	friend bool operator<=(const vector<U,Alloc>& lhs, const vector<U,Alloc>& rhs);
+	template <class U, class Alloc>
+	friend bool operator> (const vector<U,Alloc>& lhs, const vector<U,Alloc>& rhs);
+	template <class U, class Alloc>
+	friend bool operator>=(const vector<U,Alloc>& lhs, const vector<U,Alloc>& rhs);
+
+	template <class U, class Alloc>
+	friend void swap(vector<U,Alloc>& lhs, vector<U,Alloc>& rhs);
 
 private:
 	void	realloc_(size_type count);
@@ -520,7 +517,7 @@ inline void vector<T, Allocator>::swap(vector& other)
 
 /// non-member functions
 //TODO TEST
-template<class T, class Alloc>
+template <class T, class Alloc>
 inline bool operator==(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	if (lhs.size_ != rhs.size_) return false;
@@ -530,36 +527,42 @@ inline bool operator==(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 	return true;
 }
 //TODO TEST
-template<class T, class Alloc>
+template <class T, class Alloc>
 inline bool operator!=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return !(lhs == rhs);
 }
 //TODO TEST
-template<class T, class Alloc>
+template <class T, class Alloc>
 inline bool operator< (const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
 								   rhs.arr_, rhs.arr_ + rhs.size_);
 }
 //TODO TEST
-template<class T, class Alloc>
+template <class T, class Alloc>
 inline bool operator<=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return lhs == rhs || lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
 												 rhs.arr_, rhs.arr_ + rhs.size_);
 }
 //TODO TEST
-template<class T, class Alloc>
+template <class T, class Alloc>
 inline bool operator> (const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return !(lhs < rhs);
 }
 //TODO TEST
-template<class T, class Alloc>
+template <class T, class Alloc>
 inline bool operator>=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return !(lhs <= rhs);
+}
+
+template <class T, class Alloc>
+inline void swap(vector<T,Alloc>& lhs, vector<T,Alloc>& rhs)
+{
+	lhs.swap(rhs);
 }
 
 
