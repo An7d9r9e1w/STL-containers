@@ -102,23 +102,26 @@ public:
 	const_reverse_iterator	rend() const;
 
 	/// capacity
-	bool			empty() const;
-	size_type		size() const;
-	size_type		max_size() const;
-	void			reserve(size_type new_cap);
-	size_type		capacity() const;
+	bool		empty() const;
+	size_type	size() const;
+	size_type	max_size() const;
+	void		reserve(size_type new_cap);
+	size_type	capacity() const;
 
 	/// modifiers
-	void			clear();
-	iterator		insert(iterator pos, const value_type& value);
-	void			insert(iterator pos, size_type count, const T& value);
-	iterator		erase(iterator pos);
-	iterator		erase(iterator first, iterator last);
-
-	void			resize(size_type count, value_type value = value_type());
+	void		clear();
+	iterator	insert(iterator pos, const value_type& value);
+	void		insert(iterator pos, size_type count, const T& value);
+	iterator	erase(iterator pos);
+	iterator	erase(iterator first, iterator last);
+	void		push_back(const T& value);
+	void		pop_back();
+	void		resize(size_type count, value_type value = value_type());
+	void		swap(vector& other);
 
 private:
 	void	realloc_(size_type count);
+	void	reallocHelper_(size_type count);
 	void	destroy_();
 
 private:
@@ -385,12 +388,7 @@ typename vector<T, Allocator>::iterator
 vector<T, Allocator>::insert(iterator pos, const value_type& value)
 {
 	difference_type shift = &*pos - arr_;
-	if (!capacity_) {
-		realloc_(1);
-	}
-	else if (size_ + 1 > capacity_) {
-		realloc_(capacity_ << 1);
-	}
+	reallocHelper_(1);
 	pointer target = arr_ + shift;
 	std::memmove(target + 1, target, sizeof(value_type) * (size_++ - shift));
 	alloc_.construct(target, value);
@@ -401,15 +399,7 @@ template <class T, class Allocator>
 void vector<T, Allocator>::insert(iterator pos, size_type count, const T& value)
 {
 	difference_type shift = &*pos - arr_;
-	if (!capacity_) {
-		realloc_(count);
-	}
-	else if (size_ + count > capacity_) {
-		if (size_ + count > (capacity_ << 1))
-			realloc_(size_ + count);
-		else
-			realloc_(capacity_ << 1);
-	}
+	reallocHelper_(count);
 	pointer target = arr_ + shift;
 	std::memmove(target + count, target, sizeof(value_type) * (size_ - shift));
 	for (size_type i = 0; i < count; ++i)
@@ -427,7 +417,7 @@ vector<T, Allocator>::erase(iterator pos)
 	pointer target = &*pos;
 	alloc_.destroy(target);
 	std::memmove(target, target + 1, sizeof(value_type) * (--size_ - shift));
-	return pos;
+	return pos;//TODO TEST
 }
 /*
 	1 2 3 4 5
@@ -455,6 +445,7 @@ vector<T, Allocator>::erase(iterator first, iterator last)
 		alloc_.destroy(target + i);
 	std::memmove(target, target + len, sizeof(value_type) * (size_ - shift));
 	size_ -= len;
+	return last;//TODO TEST
 }
 /*
 	1 2 3 4 5 6 7
@@ -466,6 +457,27 @@ vector<T, Allocator>::erase(iterator first, iterator last)
 	1 2 * * * 5 7
 	size = 7 - 3 = 4
 */
+
+//TODO TEST
+// or just to call ::insert() ?
+template <class T, class Allocator>
+void vector<T, Allocator>::push_back(const T& value)
+{
+	reallocHelper_(1);
+	alloc_.construct(arr_ + size_++, value);
+	//OR
+	//insert(arr_ + size_, value);
+}
+
+//TODO TEST
+//Calling pop_back on an empty container results in undefined behavior. 
+template <class T, class Allocator>
+void vector<T, Allocator>::pop_back()
+{
+//	if (!size_) return;	//TODO TEST
+	alloc_.destory(arr_ + --size_);
+}
+
 template <class T, class Allocator>
 void vector<T, Allocator>::resize(size_type count, value_type value)
 {
@@ -475,7 +487,17 @@ void vector<T, Allocator>::resize(size_type count, value_type value)
 	while (size_ < count)
 		alloc_.construct(arr_ + size_++, value);
 }
+//TODO TEST
+template <class T, class Allocator>
+inline void vector<T, Allocator>::swap(vector& other)
+{
+	swap(arr_, other.arr_);
+	swap(size_, other.size_);
+	swap(capacity_, other.capacity_);
+}
 
+
+/// private
 template <class T, class Allocator>
 inline void vector<T, Allocator>::realloc_(size_type count)
 {
@@ -503,6 +525,20 @@ inline void vector<T, Allocator>::destroy_()
 	alloc_.deallocate(arr_, capacity_);
 	arr_ = NULL;
 	capacity_ = 0;
+}
+
+template <class T, class Allocator>
+inline void vector<T, Allocator>::reallocHelper_(size_type count)
+{
+	if (!capacity_) {
+		realloc_(count);
+	}
+	else if (size_ + count > capacity_) {
+		if (size_ + count > (capacity_ << 1))
+			realloc_(size_ + count);
+		else
+			realloc_(capacity_ << 1);
+	}
 }
 
 
