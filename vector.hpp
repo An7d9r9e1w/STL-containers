@@ -23,6 +23,7 @@
 
 #include "iterator.hpp"
 #include "type_traits.hpp"
+#include "algorithm.hpp"
 
 
 
@@ -118,6 +119,26 @@ public:
 	void		pop_back();
 	void		resize(size_type count, value_type value = value_type());
 	void		swap(vector& other);
+
+	/// non-member functions
+	template<class U, class Alloc>
+	bool operator==(const vector<U,Alloc>& lhs,
+					const vector<U,Alloc>& rhs);
+	template<class U, class Alloc>
+	bool operator!=(const vector<U,Alloc>& lhs,
+					const vector<U,Alloc>& rhs);
+	template<class U, class Alloc>
+	bool operator< (const vector<U,Alloc>& lhs,
+					const vector<U,Alloc>& rhs);
+	template<class U, class Alloc>
+	bool operator<=(const vector<U,Alloc>& lhs,
+					const vector<U,Alloc>& rhs);
+	template<class U, class Alloc>
+	bool operator> (const vector<U,Alloc>& lhs,
+					const vector<U,Alloc>& rhs);
+	template<class U, class Alloc>
+	bool operator>=(const vector<U,Alloc>& lhs,
+					const vector<U,Alloc>& rhs);
 
 private:
 	void	realloc_(size_type count);
@@ -494,6 +515,51 @@ inline void vector<T, Allocator>::swap(vector& other)
 	swap(arr_, other.arr_);
 	swap(size_, other.size_);
 	swap(capacity_, other.capacity_);
+}
+
+
+/// non-member functions
+//TODO TEST
+template<class T, class Alloc>
+inline bool operator==(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
+{
+	if (lhs.size_ != rhs.size_) return false;
+	for (typename vector<T, Alloc>::size_type i = 0; i < lhs.size_; ++i) {
+		if (lhs[i] != rhs[i]) return false;
+	}
+	return true;
+}
+//TODO TEST
+template<class T, class Alloc>
+inline bool operator!=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
+{
+	return !(lhs == rhs);
+}
+//TODO TEST
+template<class T, class Alloc>
+inline bool operator< (const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
+{
+	return lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
+								   rhs.arr_, rhs.arr_ + rhs.size_);
+}
+//TODO TEST
+template<class T, class Alloc>
+inline bool operator<=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
+{
+	return lhs == rhs || lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
+												 rhs.arr_, rhs.arr_ + rhs.size_);
+}
+//TODO TEST
+template<class T, class Alloc>
+inline bool operator> (const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
+{
+	return !(lhs < rhs);
+}
+//TODO TEST
+template<class T, class Alloc>
+inline bool operator>=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
+{
+	return !(lhs <= rhs);
 }
 
 
