@@ -269,6 +269,14 @@ Conclusions:
 	- data may be copied into allocated memory without construct
 
 
+1.13	pop_back
+	- Calling pop_back on an empty container results in undefined behavior.
+
+
+1.14	Compare operator
+	- < > <= >=
+	Compares the contents of lhs and rhs lexicographically.
+	The comparison is performed by a function equivalent to std::lexicographical_compare. 
 
 
 

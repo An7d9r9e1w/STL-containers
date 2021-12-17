@@ -7,6 +7,7 @@
 template <typename Vector>
 void print(const Vector& v)
 {
+//	std::cerr << "PRINT TEST" << std::endl;
 	std::cout << "s[" << v.size()
 		<< "] c[" << v.capacity()
 		<< "] f[" << v[0]
