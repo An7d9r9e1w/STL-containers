@@ -459,10 +459,11 @@ vector<T, Allocator>::erase(iterator pos)
 //	difference_type shift = &*pos - arr_;
 	//TODO check std::vector for	pos >= end()
 //	if (shift == size_) return pos;
-	pointer target = &*pos;
-	alloc_.destroy(target);
+//	pointer target = &*pos;
+	alloc_.destroy(&*pos);//target);
 //	std::memmove(target, target + 1, sizeof(value_type) * (--size_ - shift));
-	move_(target, arr_ + --size_, -1);
+//	move_(target + 1, arr_ + --size_, -1);
+	move_(&*pos + 1, arr_ + --size_, -1);
 	return pos;//TODO TEST
 }
 /*
@@ -482,16 +483,19 @@ template <class T, class Allocator>
 typename vector<T, Allocator>::iterator
 vector<T, Allocator>::erase(iterator first, iterator last)
 {
-	difference_type shift = &*last - arr_;
+//	difference_type shift = &*last - arr_;
 	//TODO
 	//if
-	pointer target = &*first;
-	size_type len = last - first;
-	for (size_type i = 0; i < len; ++i)
-		alloc_.destroy(target + i);
-	std::memmove(target, target + len, sizeof(value_type) * (size_ - shift));
-	size_ -= len;
-	return last;//TODO TEST
+	if (first != last) {
+		pointer target = &*first;
+		size_type len = last - first;
+		for (size_type i = 0; i < len; ++i)
+			alloc_.destroy(target + i);
+//		std::memmove(target, target + len, sizeof(value_type) * (size_ - shift));
+		move_(target + len, arr_ + size_ - 1, -len);
+		size_ -= len;
+	}
+	return first;//last;//TODO TEST
 }
 /*
 	1 2 3 4 5 6 7
@@ -655,9 +659,9 @@ inline void vector<T, Allocator>::move_(pointer begin, pointer end, difference_t
 		}
 	}
 	else {
-		shift = -shift;
+//		shift = -shift;
 		while (begin <= end) {
-			alloc_.construct(begin, begin[shift]);
+			alloc_.construct(begin + shift, *begin);
 			++begin;
 		}
 	}
