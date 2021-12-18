@@ -141,7 +141,7 @@ private:
 	void	realloc_(size_type count);
 	void	reallocHelper_(size_type count);
 	void	destroy_();
-	void	move_(pointer begin, pointer end, const size_type shift);
+	void	move_(pointer begin, pointer end, difference_type shift);
 
 private:
 	allocator_type	alloc_;
@@ -431,7 +431,7 @@ vector<T, Allocator>::insert(iterator pos, const value_type& value)
 //	for (pointer tmp = arr_ + ++size_; tmp != target; --tmp)
 //		alloc_.construct(tmp, tmp[-1]);
 //	move_(target, arr_ + ++size_, shift);
-	move_(target, arr_ + size_++, 1);
+	move_(target, arr_ + size_++ - 1, 1);
 	alloc_.construct(target, value);
 	return iterator(target);
 }
@@ -444,22 +444,25 @@ void vector<T, Allocator>::insert(iterator pos, size_type count, const T& value)
 	pointer target = arr_ + shift;
 //	std::memmove(target + count, target, sizeof(value_type) * (size_ - shift));
 //	move_(target + count - 1, arr_ + size_, shift); 
-	size_ += count;
-	move_(target + count - 1, arr_ + size_ - 1, count);
+//	size_ += count;
+//	move_(target + count - 1, arr_ + size_ - 1, count);	// attempt #2
+	move_(target, arr_ + size_ - 1, count);
 	for (size_type i = 0; i < count; ++i)
 		alloc_.construct(target + i, value);
+	size_ += count;
 }
 //TODO TEST
 template <class T, class Allocator>
 typename vector<T, Allocator>::iterator
 vector<T, Allocator>::erase(iterator pos)
 {
-	difference_type shift = &*pos - arr_;
+//	difference_type shift = &*pos - arr_;
 	//TODO check std::vector for	pos >= end()
-	if (shift == size_) return pos;
+//	if (shift == size_) return pos;
 	pointer target = &*pos;
 	alloc_.destroy(target);
-	std::memmove(target, target + 1, sizeof(value_type) * (--size_ - shift));
+//	std::memmove(target, target + 1, sizeof(value_type) * (--size_ - shift));
+	move_(target, arr_ + --size_, -1);
 	return pos;//TODO TEST
 }
 /*
@@ -639,15 +642,24 @@ inline void vector<T, Allocator>::reallocHelper_(size_type count)
 }
 
 template <class T, class Allocator>
-inline void vector<T, Allocator>::move_(pointer begin, pointer end, const size_type shift)
+inline void vector<T, Allocator>::move_(pointer begin, pointer end, difference_type shift)
 {
 //	for (size_type i = ++size_ - shift; i > 0; --i)
 //		alloc_.construct(target + i, target[i - 1]);
 //	for (pointer tmp = arr_ + ++size_ - shift; tmp != target; --tmp)
 //		alloc_.construct(tmp, tmp[-1]);
-	while (end != begin) {
-		alloc_.construct(end, end[-shift]);
-		--end;
+	if (shift > 0) {
+		while (end >= begin) {
+			alloc_.construct(end + shift, *end);
+			--end;
+		}
+	}
+	else {
+		shift = -shift;
+		while (begin <= end) {
+			alloc_.construct(begin, begin[shift]);
+			++begin;
+		}
 	}
 }
 
