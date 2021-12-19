@@ -327,7 +327,7 @@ template <class T, class Allocator>
 inline typename vector<T, Allocator>::const_iterator
 vector<T, Allocator>::begin() const
 {
-	return iterator(arr_);
+	return const_iterator(arr_);
 }
 
 template <class T, class Allocator>
@@ -341,7 +341,7 @@ template <class T, class Allocator>
 inline typename vector<T, Allocator>::const_iterator
 vector<T, Allocator>::end() const
 {
-	return iterator(arr_ + size_);
+	return const_iterator(arr_ + size_);
 }
 
 template <class T, class Allocator>
@@ -525,7 +525,7 @@ template <class T, class Allocator>
 void vector<T, Allocator>::pop_back()
 {
 //	if (!size_) return;	//TODO TEST
-	alloc_.destory(arr_ + --size_);
+	alloc_.destroy(arr_ + --size_);
 }
 
 template <class T, class Allocator>
@@ -541,9 +541,9 @@ void vector<T, Allocator>::resize(size_type count, value_type value)
 template <class T, class Allocator>
 inline void vector<T, Allocator>::swap(vector& other)
 {
-	swap(arr_, other.arr_);
-	swap(size_, other.size_);
-	swap(capacity_, other.capacity_);
+	ft::swap(arr_, other.arr_);
+	ft::swap(size_, other.size_);
+	ft::swap(capacity_, other.capacity_);
 }
 
 
@@ -566,7 +566,7 @@ inline bool operator!=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 }
 //TODO TEST
 template <class T, class Alloc>
-inline bool operator< (const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
+inline bool operator<(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
 								   rhs.arr_, rhs.arr_ + rhs.size_);
@@ -580,7 +580,7 @@ inline bool operator<=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 }
 //TODO TEST
 template <class T, class Alloc>
-inline bool operator> (const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
+inline bool operator>(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return !(lhs < rhs);
 }
