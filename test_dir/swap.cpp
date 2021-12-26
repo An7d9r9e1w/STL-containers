@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 
+#include <cstdio>
+
 #include "../vector.hpp"
 
 template<class Os, class Co> Os& operator<<(Os& os, const Co& co) {
@@ -38,5 +40,6 @@ int main()
 {
 	test<std::vector<int> >();
 	test<ft::vector<int> >();
+	std::getchar();
 	return 0;
 }

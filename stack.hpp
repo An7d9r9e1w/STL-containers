@@ -67,7 +67,7 @@ stack<T, Container>::~stack()
 }
 
 template<class T, class Container>
-stack<T, Container>& stack<T, Container>::operator=(const stack& other)
+inline stack<T, Container>& stack<T, Container>::operator=(const stack& other)
 {
 	if (this != &other) {
 		c = other.c;
@@ -77,39 +77,39 @@ stack<T, Container>& stack<T, Container>::operator=(const stack& other)
 
 template<class T, class Container>
 typename stack<T, Container>::reference
-stack<T, Container>::top()
+inline stack<T, Container>::top()
 {
 	return c.back();
 }
 
 template<class T, class Container>
 typename stack<T, Container>::const_reference
-stack<T, Container>::top() const
+inline stack<T, Container>::top() const
 {
 	return c.back();
 }
 
 template<class T, class Container>
-bool stack<T, Container>::empty() const
+inline bool stack<T, Container>::empty() const
 {
 	return c.empty();
 }
 
 template<class T, class Container>
 typename stack<T, Container>::size_type
-stack<T, Container>::size() const
+inline stack<T, Container>::size() const
 {
 	return c.size();
 }
 
 template<class T, class Container>
-void stack<T, Container>::push(const value_type& value)
+inline void stack<T, Container>::push(const value_type& value)
 {
 	c.push_back(value);
 }
 
 template<class T, class Container>
-void stack<T, Container>::pop()
+inline void stack<T, Container>::pop()
 {
 	c.pop_back();
 }

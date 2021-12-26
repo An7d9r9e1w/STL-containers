@@ -6,7 +6,7 @@
 /*   By: nnamor <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 15:51:52 by nnamor            #+#    #+#             */
-/*   Updated: 2021/12/26 10:55:30 by nnamor           ###   ########.fr       */
+/*   Updated: 2021/12/26 11:22:46 by nnamor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -448,7 +448,7 @@ vector<T, Allocator>::erase(iterator first, iterator last)
 	}
 	return first;
 }
-//TODO TEST
+
 template <class T, class Allocator>
 void vector<T, Allocator>::push_back(const T& value)
 {
@@ -456,13 +456,10 @@ void vector<T, Allocator>::push_back(const T& value)
 	alloc_.construct(arr_ + size_++, value);
 }
 
-//TODO TEST
-//Calling pop_back on an empty container results in undefined behavior. 
 template <class T, class Allocator>
 void vector<T, Allocator>::pop_back()
 {
-//	if (!size_) return;	//TODO TEST
-	alloc_.destroy(arr_ + --size_);
+	if (size_) alloc_.destroy(arr_ + --size_);
 }
 
 template <class T, class Allocator>
@@ -475,7 +472,7 @@ void vector<T, Allocator>::resize(size_type count, value_type value)
 		alloc_.construct(arr_ + size_++, value);
 	}
 }
-//TODO TEST
+
 template <class T, class Allocator>
 inline void vector<T, Allocator>::swap(vector& other)
 {
@@ -484,9 +481,7 @@ inline void vector<T, Allocator>::swap(vector& other)
 	ft::swap(capacity_, other.capacity_);
 }
 
-
 /// non-member functions
-//TODO TEST
 template <class T, class Alloc>
 inline bool operator==(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
@@ -496,33 +491,33 @@ inline bool operator==(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 	}
 	return true;
 }
-//TODO TEST
+
 template <class T, class Alloc>
 inline bool operator!=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return !(lhs == rhs);
 }
-//TODO TEST
+
 template <class T, class Alloc>
 inline bool operator<(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
 								   rhs.arr_, rhs.arr_ + rhs.size_);
 }
-//TODO TEST
+
 template <class T, class Alloc>
 inline bool operator<=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return lhs == rhs || lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
 												 rhs.arr_, rhs.arr_ + rhs.size_);
 }
-//TODO TEST
+
 template <class T, class Alloc>
 inline bool operator>(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
 	return !(lhs < rhs);
 }
-//TODO TEST
+
 template <class T, class Alloc>
 inline bool operator>=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
@@ -534,7 +529,6 @@ inline void swap(vector<T,Alloc>& lhs, vector<T,Alloc>& rhs)
 {
 	lhs.swap(rhs);
 }
-
 
 /// private
 template <class T, class Allocator>
