@@ -106,6 +106,7 @@ void singleEraseTest(const std::string& prompt, size_t size, size_t cap, ssize_t
 
 		checkprint(v);
 
+		printPtr(&*v.end() - 1);
 		printPtr(&*v.erase(v.begin() + pos));
 
 		checkprint(v);
@@ -189,10 +190,12 @@ void rangeEraseTest(const std::string& prompt,
 
 		checkprint(v);
 
-		if (!size)
+		if (!size) {
 			std::cerr << &*v.erase(v.begin() + pos, v.begin() + pos + count) << '\n';
-		else
+		} else {
+			printPtr(&*v.end() - 1);
 			printPtr(&*v.erase(v.begin() + pos, v.begin() + pos + count));
+		}
 
 		checkprint(v);
 	}

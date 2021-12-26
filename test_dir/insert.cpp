@@ -156,6 +156,9 @@ void singleInsertTestsTime(const std::string& stdv, const std::string& ftv)
 	singleInsertTestTime<std::string, ft::vector<std::string> >(ftv, SIZE, "Hello, world!");
 	singleInsertTestTime<IntPtr, std::vector<IntPtr> >(stdv, SIZE, IntPtr());
 	singleInsertTestTime<IntPtr, ft::vector<IntPtr> >(ftv, SIZE, IntPtr());
+
+//	std::printf("TEST _");
+//	std::getchar();
 }
 
 

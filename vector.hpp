@@ -6,7 +6,7 @@
 /*   By: nnamor <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 15:51:52 by nnamor            #+#    #+#             */
-/*   Updated: 2021/12/12 17:57:09 by nnamor           ###   ########.fr       */
+/*   Updated: 2021/12/26 10:55:30 by nnamor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,6 @@
 #include "type_traits.hpp"
 #include "algorithm.hpp"
 
-
-#include <cstdio>//TEST
-#include <iostream>//TEST
 
 namespace ft
 {
@@ -138,10 +135,10 @@ public:
 	friend void swap(vector<U,Alloc>& lhs, vector<U,Alloc>& rhs);
 
 private:
-	void	realloc_(size_type count);
-	void	reallocHelper_(size_type count);
+	void	realloc_(size_type count, size_type pos = 0, difference_type shift = 0);
+	bool	reallocHelper_(size_type count, size_type pos = 0, difference_type shift = 0);
 	void	destroy_();
-	void	move_(pointer begin, pointer end, difference_type shift);
+	void	move_(pointer dst, pointer src, difference_type len);
 
 private:
 	allocator_type	alloc_;
@@ -248,13 +245,6 @@ template <class T, class Allocator>
 inline typename vector<T, Allocator>::reference
 vector<T, Allocator>::operator[](size_type pos)
 {
-/*	std::cerr << "\t|\tACCESS" << std::endl;//TEST
-	std::cerr << "\t|\ts[" << size_
-		<< "] c[" << capacity_
-		<< "] fp[" << arr_
-		<< "] " << *arr_ << std::endl;//TEST
-	std::cerr << "\t|\tpos[" << pos << ']' << std::endl;//TEST
-	std::cerr << "\t|\t = [" << arr_[pos] << ']' << std::endl;//TEST*/
 	return arr_[pos];
 }
 
@@ -262,13 +252,6 @@ template <class T, class Allocator>
 inline typename vector<T, Allocator>::const_reference
 vector<T, Allocator>::operator[](size_type pos) const
 {
-/*	std::cerr << "\t|\tACCESS" << std::endl;//TEST
-	std::cerr << "\t|\ts[" << size_
-		<< "] c[" << capacity_
-		<< "] fp[" << arr_
-		<< "] " << *arr_ << std::endl;//TEST
-	std::cerr << "\t|\tpos[" << pos << ']' << std::endl;//TEST
-	std::cerr << "\t|\t = [" << arr_[pos] << ']' << std::endl;//TEST*/
 	return arr_[pos];
 }
 
@@ -411,112 +394,66 @@ vector<T, Allocator>::capacity() const
 template <class T, class Allocator>
 inline void vector<T, Allocator>::clear()
 {
-//	std::printf("\tFOR\n");//TEST
 	for (size_type i = 0; i < size_; ++i)
 		alloc_.destroy(arr_ + i);
-//	std::printf("\tFOR end\n");//TEST
 	size_ = 0;
 }
-//TODO TEST
+
 template <class T, class Allocator>
 typename vector<T, Allocator>::iterator
 vector<T, Allocator>::insert(iterator pos, const value_type& value)
 {
 	difference_type shift = &*pos - arr_;
-	reallocHelper_(1);
+	bool realloced = reallocHelper_(1, shift, 1);
 	pointer target = arr_ + shift;
-//	std::memmove(target + 1, target, sizeof(value_type) * (size_++ - shift));
-//	for (size_type i = ++size_ - shift; i > 0; --i)
-//		alloc_.construct(target + i, target[i - 1]);
-//	for (pointer tmp = arr_ + ++size_; tmp != target; --tmp)
-//		alloc_.construct(tmp, tmp[-1]);
-//	move_(target, arr_ + ++size_, shift);
-	move_(target, arr_ + size_++ - 1, 1);
+	if (!realloced) move_(target + 1, target, size_ - shift);
+	++size_;
 	alloc_.construct(target, value);
 	return iterator(target);
 }
-//TODO TEST
+
 template <class T, class Allocator>
 void vector<T, Allocator>::insert(iterator pos, size_type count, const T& value)
 {
 	difference_type shift = &*pos - arr_;
-	reallocHelper_(count);
+	bool realloced = reallocHelper_(count, shift, count);
 	pointer target = arr_ + shift;
-//	std::memmove(target + count, target, sizeof(value_type) * (size_ - shift));
-//	move_(target + count - 1, arr_ + size_, shift); 
-//	size_ += count;
-//	move_(target + count - 1, arr_ + size_ - 1, count);	// attempt #2
-	move_(target, arr_ + size_ - 1, count);
+	if (!realloced) move_(target + count, target, size_ - shift);
 	for (size_type i = 0; i < count; ++i)
 		alloc_.construct(target + i, value);
 	size_ += count;
 }
-//TODO TEST
+
 template <class T, class Allocator>
 typename vector<T, Allocator>::iterator
 vector<T, Allocator>::erase(iterator pos)
 {
-//	difference_type shift = &*pos - arr_;
-	//TODO check std::vector for	pos >= end()
-//	if (shift == size_) return pos;
-//	pointer target = &*pos;
-	alloc_.destroy(&*pos);//target);
-//	std::memmove(target, target + 1, sizeof(value_type) * (--size_ - shift));
-//	move_(target + 1, arr_ + --size_, -1);
-	move_(&*pos + 1, arr_ + --size_, -1);
-	return pos;//TODO TEST
+	pointer target = &*pos;
+	alloc_.destroy(target);
+	move_(target, target + 1, --size_ - (arr_ - target));
+	return pos;
 }
-/*
-	1 2 3 4 5
-	pos = 2
-	shift = 2
-	size - shift - 1 = 2
-	1 2 * 4 5
-	size = 4
 
-	-1	-> because pos is deleted
-	but |	last is out of delete range, so there is no -1
-		V
-*/
-//TODO TEST
 template <class T, class Allocator>
 typename vector<T, Allocator>::iterator
 vector<T, Allocator>::erase(iterator first, iterator last)
 {
-//	difference_type shift = &*last - arr_;
-	//TODO
-	//if
 	if (first != last) {
 		pointer target = &*first;
 		size_type len = last - first;
 		for (size_type i = 0; i < len; ++i)
 			alloc_.destroy(target + i);
-//		std::memmove(target, target + len, sizeof(value_type) * (size_ - shift));
-		move_(target + len, arr_ + size_ - 1, -len);
 		size_ -= len;
+		move_(target, target + len, size_ - (arr_ - target));
 	}
-	return first;//last;//TODO TEST
+	return first;
 }
-/*
-	1 2 3 4 5 6 7
-	f = 2
-	l = 5
-	shift = 5
-	len = 3
-	size - shift = 2
-	1 2 * * * 5 7
-	size = 7 - 3 = 4
-*/
-
 //TODO TEST
-// or just to call ::insert() ?
 template <class T, class Allocator>
 void vector<T, Allocator>::push_back(const T& value)
 {
 	reallocHelper_(1);
 	alloc_.construct(arr_ + size_++, value);
-	//OR
-	//insert(arr_ + size_, value);
 }
 
 //TODO TEST
@@ -534,8 +471,9 @@ void vector<T, Allocator>::resize(size_type count, value_type value)
 	if (count > capacity_) realloc_(count);
 	while (size_ > count)
 		alloc_.destroy(arr_ + --size_);
-	while (size_ < count)
+	while (size_ < count) {
 		alloc_.construct(arr_ + size_++, value);
+	}
 }
 //TODO TEST
 template <class T, class Allocator>
@@ -600,7 +538,7 @@ inline void swap(vector<T,Alloc>& lhs, vector<T,Alloc>& rhs)
 
 /// private
 template <class T, class Allocator>
-inline void vector<T, Allocator>::realloc_(size_type count)
+void vector<T, Allocator>::realloc_(size_type count, size_type pos, difference_type shift)
 {
 	if (count > max_size()) {
 		destroy_();
@@ -608,7 +546,8 @@ inline void vector<T, Allocator>::realloc_(size_type count)
 	}
 	try {
 		pointer tmp_arr = alloc_.allocate(count);
-		std::memcpy(tmp_arr, arr_, sizeof(value_type) * size_);
+		move_(tmp_arr, arr_, pos);
+		move_(tmp_arr + pos + shift, arr_ + pos, size_ - pos);
 		alloc_.deallocate(arr_, capacity_);
 		arr_ = tmp_arr;
 		capacity_ = count;
@@ -622,47 +561,40 @@ inline void vector<T, Allocator>::realloc_(size_type count)
 template <class T, class Allocator>
 inline void vector<T, Allocator>::destroy_()
 {
-//	std::printf("CLEAR\n");//TEST
 	clear();
-//	std::printf("DEALLOC\n");//TEST
 	alloc_.deallocate(arr_, capacity_);
-//	std::printf("END\n");//TEST
 	arr_ = NULL;
 	capacity_ = 0;
 }
 
 template <class T, class Allocator>
-inline void vector<T, Allocator>::reallocHelper_(size_type count)
+bool vector<T, Allocator>::reallocHelper_(size_type count, size_type pos, difference_type shift)
 {
 	if (!capacity_) {
-		realloc_(count);
-	}
-	else if (size_ + count > capacity_) {
+		realloc_(count, pos, shift);
+		return true;
+	} else if (size_ + count > capacity_) {
 		if (size_ + count > (capacity_ << 1))
-			realloc_(size_ + count);
+			realloc_(size_ + count, pos, shift);
 		else
-			realloc_(capacity_ << 1);
+			realloc_(capacity_ << 1, pos, shift);
+		return true;
 	}
+	return false;
 }
 
 template <class T, class Allocator>
-inline void vector<T, Allocator>::move_(pointer begin, pointer end, difference_type shift)
+void vector<T, Allocator>::move_(pointer dst, pointer src, difference_type len)
 {
-//	for (size_type i = ++size_ - shift; i > 0; --i)
-//		alloc_.construct(target + i, target[i - 1]);
-//	for (pointer tmp = arr_ + ++size_ - shift; tmp != target; --tmp)
-//		alloc_.construct(tmp, tmp[-1]);
-	if (shift > 0) {
-		while (end >= begin) {
-			alloc_.construct(end + shift, *end);
-			--end;
+	if (dst < src) {
+		for (difference_type i = 0; i < len; ++i) {
+			alloc_.construct(dst + i, src[i]);
+			alloc_.destroy(src + i);
 		}
-	}
-	else {
-//		shift = -shift;
-		while (begin <= end) {
-			alloc_.construct(begin + shift, *begin);
-			++begin;
+	} else {
+		for (difference_type i = len - 1; i >= 0; --i) {
+			alloc_.construct(dst + i, src[i]);
+			alloc_.destroy(src + i);
 		}
 	}
 }

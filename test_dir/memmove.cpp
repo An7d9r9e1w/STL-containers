@@ -56,8 +56,8 @@ void testMove(const T& value)
 
 int main()
 {
-//	testMove(5);
-//	testMove<std::string>("Hello, world 01");
-	test();
+	testMove(5);
+	testMove<std::string>("Hello, world 012345");
+	std::getchar();
 	return 0;
 }
