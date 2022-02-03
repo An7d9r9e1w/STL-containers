@@ -6,7 +6,7 @@
 /*   By: nnamor <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 13:40:02 by nnamor            #+#    #+#             */
-/*   Updated: 2021/12/11 15:12:41 by nnamor           ###   ########.fr       */
+/*   Updated: 2022/01/30 16:23:07 by nnamor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,28 +19,28 @@ namespace ft
 /// equal compare
 template <class InputIt1, class InputIt2>
 inline bool equal(InputIt1 first1, InputIt1 last1,
-				  InputIt2 first2)
+                  InputIt2 first2)
 {
-	for ( ; first1 != last1; ++first1, ++first2) {
-		if (*first1 != *first2) return false;
-	}
-	return true;
+    for ( ; first1 != last1; ++first1, ++first2) {
+        if (*first1 != *first2) return false;
+    }
+    return true;
 }
 
 template <class InputIt1, class InputIt2, class BinaryPredicate>
 inline bool equal(InputIt1 first1, InputIt1 last1,
-				  InputIt2 first2, BinaryPredicate pred)
+                  InputIt2 first2, BinaryPredicate pred)
 {
-	for ( ; first1 != last1; ++first1, ++first2) {
-		if (!pred(*first1, *first2)) return false;
-	}
-	return true;
+    for ( ; first1 != last1; ++first1, ++first2) {
+        if (!pred(*first1, *first2)) return false;
+    }
+    return true;
 }
 
 /// lexicographical_compare
 template<class InputIt1, class InputIt2>
 inline bool lexicographical_compare(InputIt1 first1, InputIt1 last1,
-									InputIt2 first2, InputIt2 last2)
+                                    InputIt2 first2, InputIt2 last2)
 {
     for ( ; (first1 != last1) && (first2 != last2); ++first1, ++first2 ) {
         if (*first1 < *first2) return true;
@@ -51,7 +51,7 @@ inline bool lexicographical_compare(InputIt1 first1, InputIt1 last1,
 
 template<class InputIt1, class InputIt2, class Compare>
 inline bool lexicographical_compare(InputIt1 first1, InputIt1 last1,
-									InputIt2 first2, InputIt2 last2, Compare comp)
+                                    InputIt2 first2, InputIt2 last2, Compare comp)
 {
     for ( ; (first1 != last1) && (first2 != last2); ++first1, ++first2 ) {
         if (comp(*first1, *first2)) return true;
@@ -64,12 +64,12 @@ inline bool lexicographical_compare(InputIt1 first1, InputIt1 last1,
 template <class T>
 inline void swap(T& a, T& b)
 {
-	T tmp = a;
-	a = b;
-	b = tmp;
+    T tmp = a;
+    a = b;
+    b = tmp;
 }
 
 
 }
 
-#endif	// ALGORITHM_H_
+#endif    /*ALGORITHM_H_*/

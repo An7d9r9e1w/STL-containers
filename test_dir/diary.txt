@@ -291,5 +291,5 @@ X.	vector<bool>:
 
 		*** 3. Map ***
 
-
+    https://stackoverflow.com/questions/58872546/why-does-stl-function-use-nodes-color-to-calculate-stdmap-node-predecessor/58879195#58879195
 
