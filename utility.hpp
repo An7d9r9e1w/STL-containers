@@ -28,9 +28,11 @@ struct pair
 
     pair();
     pair(const first_type& x, const second_type& y);
-    pair(const pair<T1, T2>& p);
+    template <class U1, class U2>
+    pair(const pair<U1, U2>& p);
 
-    pair& operator=(const pair& other);
+    template <class U1, class U2>
+    pair& operator=(const pair<U1, U2>& other);
 
     template<class U1, class U2>
     friend bool operator==(const std::pair<U1,U2>& lhs, const std::pair<U1,U2>& rhs);
@@ -74,7 +76,8 @@ pair<T1, T2>::pair(const first_type& x, const second_type& y)
 }
 
 template <class T1, class T2>
-pair<T1, T2>::pair(const pair<T1, T2>& p)
+    template <class U1, class U2>
+pair<T1, T2>::pair(const pair<U1, U2>& p)
     :
     first(p.first),
     second(p.second)
@@ -82,7 +85,8 @@ pair<T1, T2>::pair(const pair<T1, T2>& p)
 }
 
 template<class T1, class T2>
-inline pair<T1, T2>& pair<T1, T2>::operator=(const pair& other)
+    template <class U1, class U2>
+inline pair<T1, T2>& pair<T1, T2>::operator=(const pair<U1, U2>& other)
 {
     if (this != &other) {
         first = other.first;

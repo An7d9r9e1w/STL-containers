@@ -2,6 +2,7 @@
 #define STL_TREE_H_
 
 #include <cstddef>
+#include <iterator>
 
 template <class T>
 T* addressof(T& arg)
@@ -14,7 +15,7 @@ T* addressof(T& arg)
 enum _Rb_tree_color
 {
     _S_red = false,
-    _S_blakc = true
+    _S_black = true
 };
 
 struct _Rb_tree_node_base
@@ -73,7 +74,7 @@ struct _Rb_tree_header
         _M_header._M_parent = __from._M_header._M_parent;
         _M_header._M_left = __from._M_header._M_left;
         _M_header._M_right = __from._M_header._M_right;
-        _M_header._M_parent->_M_parent = &_M_header; //TODO WHY?? - for increment operation
+        _M_header._M_parent->_M_parent = &_M_header; //TODO WHY?? - for increment/decrement operation
         _M_node_count = __from._M_node_count;
 
         __from._M_reset();
@@ -106,6 +107,183 @@ struct _Rb_tree_node : public _Rb_tree_node_base
     }
 };
 
+_Rb_tree_node_base*
+_Rb_tree_increment(_Rb_tree_node_base* __x) throw();
 
+const _Rb_tree_node_base*
+_Rb_tree_increment(const _Rb_tree_node_base* __x) throw();
+
+_Rb_tree_node_base*
+_Rb_tree_decrement(_Rb_tree_node_base* __x) throw();
+
+const _Rb_tree_node_base*
+_Rb_tree_decrement(const _Rb_tree_node_base* __x) throw();
+
+template <typename _Tp>
+struct _Rb_tree_iterator
+{
+    typedef _Tp  value_type;
+    typedef _Tp& reference;
+    typedef _Tp* pointer;
+
+    typedef std::bidirectional_iterator_tag iterator_category;
+    typedef ptrdiff_t                       difference_type;
+
+    typedef _Rb_tree_iterator<_Tp>          _Self;
+    typedef _Rb_tree_node_base::_Base_ptr   _Base_ptr;
+    typedef _Rb_tree_node<_Tp>*             _Link_type;
+
+    _Rb_tree_iterator()
+    : _M_node() {}
+
+    explicit
+    _Rb_tree_iterator(_Base_ptr __x)
+    : _M_node(__x) {}
+
+    reference
+    operator*() const
+    {
+        return *static_cast<_Link_type>(_M_node)->_M_valptr();
+    }
+
+    pointer
+    operator->() const
+    {
+        return static_cast<_Link_type>(_M_node)->_M_valptr();
+    }
+
+    _Self&
+    operator++()
+    {
+        _M_node = _Rb_tree_increment(_M_node);
+        return *this;
+    }
+
+    _Self&
+    operator++(int)
+    {
+        _Self __tmp = *this;
+        _M_node = _Rb_tree_increment(_M_node);
+        return __tmp;
+    }
+
+    _Self&
+    operator--()
+    {
+        _M_node = _Rb_tree_decrement(_M_node);
+        return *this;
+    }
+
+    _Self&
+    operator--(int)
+    {
+        _Self __tmp = *this;
+        _M_node = _Rb_tree_decrement(_M_node);
+        return __tmp;
+    }
+
+    friend bool
+    operator==(const _Self& __x, const _Self& __y)
+    {
+        return __x._M_node == __y._M_node;
+    }
+
+    friend bool
+    operator!=(const _Self& __x, const _Self& __y)
+    {
+        return __x._M_node != __y._M_node;
+    }
+
+    _Base_ptr _M_node;
+};
+
+template <typename _Tp>
+struct _Rb_tree_const_iterator
+{
+    typedef _Tp        value_type;
+    typedef const _Tp& reference;
+    typedef const _Tp* pointer;
+
+    typedef _Rb_tree_iterator<_Tp> iterator;
+
+    typedef std::bidirectional_iterator_tag iterator_category;
+    typedef ptrdiff_t                       difference_type;
+
+    typedef _Rb_tree_iterator<_Tp>          _Self;
+    typedef _Rb_tree_node_base::_Base_ptr   _Base_ptr;
+    typedef _Rb_tree_node<_Tp>*             _Link_type;
+
+    _Rb_tree_const_iterator()
+    : _M_node() {}
+
+    explicit
+    _Rb_tree_const_iterator(_Base_ptr __x)
+    : _M_node(__x) {}
+
+    _Rb_tree_const_iterator(const iterator& __it)
+    : _M_node(__it._M_node) {}
+
+    iterator
+    _M_const_cast() const
+    {
+        return iterator(const_cast<typename iterator::_Base_ptr>(_M_node));
+    }
+
+    reference
+    operator*() const
+    {
+        return *static_cast<_Link_type>(_M_node)->_M_valptr();
+    }
+
+    pointer
+    operator->() const
+    {
+        return static_cast<_Link_type>(_M_node)->_M_valptr();
+    }
+
+    _Self&
+    operator++()
+    {
+        _M_node = _Rb_tree_increment(_M_node);
+        return *this;
+    }
+
+    _Self&
+    operator++(int)
+    {
+        _Self __tmp = *this;
+        _M_node = _Rb_tree_increment(_M_node);
+        return __tmp;
+    }
+
+    _Self&
+    operator--()
+    {
+        _M_node = _Rb_tree_decrement(_M_node);
+        return *this;
+    }
+
+    _Self&
+    operator--(int)
+    {
+        _Self __tmp = *this;
+        _M_node = _Rb_tree_decrement(_M_node);
+        return __tmp;
+    }
+
+    friend bool
+    operator==(const _Self& __x, const _Self& __y)
+    {
+        return __x._M_node == __y._M_node;
+    }
+
+    friend bool
+    operator!=(const _Self& __x, const _Self& __y)
+    {
+        return __x._M_node != __y._M_node;
+    }
+
+    _Base_ptr _M_node;
+};
 
 #endif // STL_TREE_H_

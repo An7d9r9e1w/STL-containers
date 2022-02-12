@@ -210,13 +210,13 @@ void _delete_fixup(tree_t *t, node_t *n)
             } else {
                 if (s->right->color == BLACK) {
                     s->left->color = BLACK;
-                    s->color = RED;
+                    s->color = RED;//?
                     right_rotate(t, s);
                     s = n->parent->right;
                 }
                 s->color = n->parent->color;
                 n->parent->color = BLACK;
-                s->right->color = BLACK;
+                s->right->color = BLACK;//?
                 left_rotate(t, n->parent);
                 n = t->root;
             }
@@ -265,7 +265,7 @@ void _delete(tree_t *t, node_t *n)
         y_color = y->color;
         x = y->right;
         if (y->parent == n) {
-            x->parent = y;
+            x->parent = y;//?
         } else {
             _transplant(t, y, y->right);
             y->right = n->right;
@@ -340,6 +340,7 @@ int main(void)
     printf("time = %g s\n", (double)(stop - start) / CLOCKS_PER_SEC);
 
     free_tree(t);
-    getchar();
+    free(set);
+//    getchar();
     return 0;
 }
