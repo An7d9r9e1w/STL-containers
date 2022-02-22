@@ -139,41 +139,6 @@ private:
     pointer ptr_;
 };
 
-/// Node iterator
-//TODO
-template <class T>
-class NodeIterator : public iterator<bidirectional_iterator_tag, T>
-{
-public:
-    typedef typename iterator<random_access_iterator_tag, T>::iterator_category iterator_category;
-    typedef typename iterator<random_access_iterator_tag, T>::value_type        value_type;
-    typedef typename iterator<random_access_iterator_tag, T>::difference_type   difference_type;
-    typedef typename iterator<random_access_iterator_tag, T>::pointer           pointer;
-    typedef typename iterator<random_access_iterator_tag, T>::reference         reference;
-public:
-    NodeIterator(pointer ptr);
-    NodeIterator(const NodeIterator& rai);
-    ~NodeIterator();
-
-public:
-    NodeIterator&     operator=(const NodeIterator& rai);
-
-    bool              operator==(const NodeIterator& rai) const;
-    bool              operator!=(const NodeIterator& rai) const;
-
-    value_type&       operator*();
-    const value_type& operator*() const;
-    value_type&       operator->();
-    const value_type& operator->() const;
-
-    NodeIterator&     operator++();
-    NodeIterator      operator++(int);
-    NodeIterator&     operator--();
-    NodeIterator      operator--(int);
-
-private:
-    pointer ptr_;
-};
 
 /// Reverse iterator
 template <class Iter>
@@ -419,8 +384,6 @@ operator-(const wrap_iter<T>& lhs,
     return lhs.ptr_ - rhs.ptr_;
 }
 
-/// Node iterator
-//TODO
 
 /// Reverse iterator
 template <class Iter>

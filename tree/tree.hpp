@@ -5,6 +5,8 @@
 #include <memory>
 #include <iterator>
 
+#include <cassert>
+
 #include "../utility.hpp"
 #include "../iterator.hpp"
 #include "../algorithm.hpp"
@@ -76,7 +78,8 @@ struct _Rb_tree_header
         header.parent = from.header.parent;
         header.left = from.header.left;
         header.right = from.header.right;
-        header.parent->parent = &header;
+        if (header.parent)
+            header.parent->parent = &header;
         count = from.count;
 
         from.reset();
@@ -111,13 +114,13 @@ struct _Rb_tree_node : public _Rb_tree_node_base
     Val*
     val_ptr()
     {
-        return addressof(value_field);
+        return ft::addressof(value_field);
     }
 
     const Val*
     val_ptr() const
     {
-        return addressof(value_field);
+        return ft::addressof(value_field);
     }
 };
 
@@ -146,6 +149,9 @@ struct _Rb_tree_iterator
     typedef _Rb_tree_iterator<T>         self;
     typedef _Rb_tree_node_base::base_ptr base_ptr;
     typedef _Rb_tree_node<T>*            node_ptr;
+
+    _Rb_tree_iterator()
+    {}
 
     explicit
     _Rb_tree_iterator(base_ptr x)
@@ -236,6 +242,9 @@ struct _Rb_tree_const_iterator
     typedef _Rb_tree_const_iterator<T>         self;
     typedef _Rb_tree_node_base::const_base_ptr base_ptr;
     typedef const _Rb_tree_node<T>*            node_ptr;
+
+    _Rb_tree_const_iterator()
+    {}
 
     explicit
     _Rb_tree_const_iterator(base_ptr x)
@@ -385,13 +394,18 @@ public:
         if (this != &t)
         {
             _node_pool._free(_header.header.parent);
-            _header.header.parent =
-                _copy(t._header.header.parent, &_header.header);
-            _header.header.left =
-                _Rb_tree_node_base::minimum(_header.header.parent);
-            _header.header.right =
-                _Rb_tree_node_base::maximum(_header.header.parent);
-            _header.count = t._header.count;
+            if (t.empty())
+                _header.reset();
+            else
+            {
+                _header.header.parent =
+                    _copy(t._header.header.parent, &_header.header);
+                _header.header.left =
+                    _Rb_tree_node_base::minimum(_header.header.parent);
+                _header.header.right =
+                    _Rb_tree_node_base::maximum(_header.header.parent);
+                _header.count = t._header.count;
+            }
         }
         return *this;
     }
@@ -482,7 +496,7 @@ public:
     {
         bool was_inserted;
         base_ptr x = _insert(value, was_inserted);
-        return make_pair(iterator(x), was_inserted);
+        return ft::make_pair(iterator(x), was_inserted);
     }
 
     iterator
@@ -526,6 +540,7 @@ public:
         return count;
     }
 
+
     void
     swap(_Rb_tree& t)
     {
@@ -543,7 +558,7 @@ public:
         for (const_iterator it = find(key);
                 it != end();
                 ++it, ++count)
-            if (_comp(key, it->first))
+            if (_comp(key, KeyOfValue()(*it)))
                 break;
         return count;
     }
@@ -602,6 +617,46 @@ public:
         return _comp;
     }
 
+    /// non-member functions
+    friend bool
+    operator==(const _Rb_tree& lhs, const _Rb_tree& rhs)
+    {
+        return lhs.size() == rhs.size()
+            && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+    }
+
+    friend bool
+    operator!=(const _Rb_tree& lhs, const _Rb_tree& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    friend bool
+    operator<(const _Rb_tree& lhs, const _Rb_tree& rhs)
+    {
+        return ft::lexicographical_compare(lhs.begin(), lhs.end(),
+                                           rhs.begin(), rhs.end());
+    }
+
+    friend bool
+    operator<=(const _Rb_tree& lhs, const _Rb_tree& rhs)
+    {
+        return lhs == rhs || ft::lexicographical_compare(lhs.begin(), lhs.end(),
+                                                         rhs.begin(), rhs.end());
+    }
+
+    friend bool
+    operator>(const _Rb_tree& lhs, const _Rb_tree& rhs)
+    {
+        return !(lhs <= rhs);
+    }
+
+    friend bool
+    operator>=(const _Rb_tree& lhs, const _Rb_tree& rhs)
+    {
+        return !(lhs < rhs);
+    }
+
 private:
     base_ptr
     _insert_unique(_Rb_tree_node_base* const p, const_reference val)
@@ -609,10 +664,11 @@ private:
         const bool insert_left = (p == &_header.header
             || _comp(KeyOfValue()(val),
             KeyOfValue()(*static_cast<node_ptr>(p)->val_ptr())));
+
         base_ptr x = _node_pool._make_node(val);
         _Rb_tree_insert_and_rebalance(insert_left, x, p, _header.header);
         _header.count++;
-return x;
+        return x;
     }
 
     base_ptr
@@ -658,7 +714,7 @@ return x;
         }
         if (_comp(KeyOfValue()(*static_cast<node_ptr>(
             _Rb_tree_decrement(hint))->val_ptr()), KeyOfValue()(val))
-            && _comp(val.first,
+            && _comp(KeyOfValue()(val),
             KeyOfValue()(*static_cast<node_ptr>(
             _Rb_tree_increment(hint))->val_ptr())))
         {
@@ -675,13 +731,13 @@ return x;
         while (x)
         {
             if (_comp(key, KeyOfValue()(
-                *static_cast<const_node_ptr>(x))->val_ptr()))
+                *static_cast<const_node_ptr>(x)->val_ptr())))
             {
                 y = x;
                 x = x->left;
             }
             else if (_comp(KeyOfValue()(
-                *static_cast<const_node_ptr>(x))->val_ptr(), key))
+                *static_cast<const_node_ptr>(x)->val_ptr()), key))
             {
                 x = x->right;
             }
@@ -699,7 +755,7 @@ return x;
         while (x)
         {
             if (_comp(key,
-                KeyOfValue()(*static_cast<const_node_ptr>(x))->val_ptr()))
+                KeyOfValue()(*static_cast<const_node_ptr>(x)->val_ptr())))
             {
                 y = x;
                 x = x->left;
@@ -716,7 +772,7 @@ return x;
         const_base_ptr x = _lower_bound(key);
         if (x == &_header.header
             || _comp(key,
-            KeyOfValue()(*static_cast<const_node_ptr>(x))->val_ptr()))
+            KeyOfValue()(*static_cast<const_node_ptr>(x)->val_ptr())))
         {
             return &_header.header;
         }

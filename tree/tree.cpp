@@ -66,17 +66,20 @@ _Rb_tree_decrement(const _Rb_tree_node_base* x) throw()
 void _Rb_tree_rotate_left(_Rb_tree_node_base* const x,
                           _Rb_tree_node_base*& root) throw()
 {
-    _Rb_tree_node_base* y = x->right;
+    _Rb_tree_node_base* const y = x->right;
+
     x->right = y->left;
     if (y->left)
         y->left->parent = x;
     y->parent = x->parent;
+
     if (x == root)
         root = y;
     else if (x == x->parent->left)
         x->parent->left = y;
     else
         x->parent->right = y;
+
     y->left = x;
     x->parent = y;
 }
@@ -84,17 +87,20 @@ void _Rb_tree_rotate_left(_Rb_tree_node_base* const x,
 void _Rb_tree_rotate_right(_Rb_tree_node_base* const x,
                           _Rb_tree_node_base*& root) throw()
 {
-    _Rb_tree_node_base* y = x->left;
+    _Rb_tree_node_base* const y = x->left;
+
     x->left = y->right;
     if (y->right)
         y->right->parent = x;
     y->parent = x->parent;
+
     if (x == root)
         root = y;
     else if (x == x->parent->right)
         x->parent->right = y;
     else
         x->parent->left = y;
+
     y->right = x;
     x->parent = y;
 }
@@ -116,8 +122,8 @@ void _Rb_tree_insert_and_rebalance(const bool insert_left,
         p->left = x;
         if (p == &header)
         {
-            p->right = x;
-            p->parent = x;
+            header.right = x;
+            header.parent = x;
         }
         else if (p == header.left)
             header.left = x;
@@ -134,7 +140,7 @@ void _Rb_tree_insert_and_rebalance(const bool insert_left,
         _Rb_tree_node_base* const xpp = x->parent->parent;
         if (x->parent == xpp->left)
         {
-            _Rb_tree_node_base* w = xpp->right;
+            _Rb_tree_node_base* const w = xpp->right;
             if (w && w->color == RED)
             {
                 w->color = BLACK;
@@ -156,7 +162,7 @@ void _Rb_tree_insert_and_rebalance(const bool insert_left,
         }
         else
         {
-            _Rb_tree_node_base* w = xpp->left;
+            _Rb_tree_node_base* const w = xpp->left;
             if (w && w->color == RED)
             {
                 w->color = BLACK;
@@ -205,8 +211,8 @@ _Rb_tree_rebalance_for_erase(_Rb_tree_node_base* const z,
 
     if (y != z)
     {
-        y->left = z->left;
         z->left->parent = y;
+        y->left = z->left;
         if (y != z->right)
         {
             x_parent = y->parent;
@@ -230,9 +236,9 @@ _Rb_tree_rebalance_for_erase(_Rb_tree_node_base* const z,
     }
     else
     {
-        x_parent = z->parent;
+        x_parent = y->parent;
         if (x)
-            x->parent = z->parent;
+            x->parent = y->parent;
         if (root == z)
             root = x;
         else if (z == z->parent->left)
@@ -278,7 +284,7 @@ _Rb_tree_rebalance_for_erase(_Rb_tree_node_base* const z,
                 }
                 else
                 {
-                    if (w->right && w->right->color == BLACK)
+                    if (w->right == NULL || w->right->color == BLACK)
                     {
                         w->color = RED;
                         w->left->color = BLACK;
@@ -312,7 +318,7 @@ _Rb_tree_rebalance_for_erase(_Rb_tree_node_base* const z,
                 }
                 else
                 {
-                    if (w->right && w->left->color == BLACK)
+                    if (w->left == NULL || w->left->color == BLACK)
                     {
                         w->color = RED;
                         w->right->color = BLACK;

@@ -35,17 +35,17 @@ struct pair
     pair& operator=(const pair<U1, U2>& other);
 
     template<class U1, class U2>
-    friend bool operator==(const std::pair<U1,U2>& lhs, const std::pair<U1,U2>& rhs);
+    friend bool operator==(const pair<U1,U2>& lhs, const pair<U1,U2>& rhs);
     template<class U1, class U2>
-    friend bool operator!=(const std::pair<U1,U2>& lhs, const std::pair<U1,U2>& rhs);
+    friend bool operator!=(const pair<U1,U2>& lhs, const pair<U1,U2>& rhs);
     template<class U1, class U2>
-    friend bool operator< (const std::pair<U1,U2>& lhs, const std::pair<U1,U2>& rhs);
+    friend bool operator< (const pair<U1,U2>& lhs, const pair<U1,U2>& rhs);
     template<class U1, class U2>
-    friend bool operator<=(const std::pair<U1,U2>& lhs, const std::pair<U1,U2>& rhs);
+    friend bool operator<=(const pair<U1,U2>& lhs, const pair<U1,U2>& rhs);
     template<class U1, class U2>
-    friend bool operator> (const std::pair<U1,U2>& lhs, const std::pair<U1,U2>& rhs);
+    friend bool operator> (const pair<U1,U2>& lhs, const pair<U1,U2>& rhs);
     template<class U1, class U2>
-    friend bool operator>=(const std::pair<U1,U2>& lhs, const std::pair<U1,U2>& rhs);
+    friend bool operator>=(const pair<U1,U2>& lhs, const pair<U1,U2>& rhs);
 
 };
 
@@ -96,20 +96,20 @@ inline pair<T1, T2>& pair<T1, T2>::operator=(const pair<U1, U2>& other)
 }
 
 template<class T1, class T2>
-inline bool operator==(const std::pair<T1,T2>& lhs, const std::pair<T1,T2>& rhs)
+inline bool operator==(const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
 {
     return lhs.first == rhs.first
         && lhs.second == rhs.second;
 }
 
 template<class T1, class T2>
-inline bool operator!=(const std::pair<T1,T2>& lhs, const std::pair<T1,T2>& rhs)
+inline bool operator!=(const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
 {
     return !(lhs == rhs);
 }
 
 template<class T1, class T2>
-inline bool operator<(const std::pair<T1,T2>& lhs, const std::pair<T1,T2>& rhs)
+inline bool operator<(const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
 {
     if (lhs.first < rhs.first) return true;
     if (rhs.first < lhs.first) return false;
@@ -118,19 +118,19 @@ inline bool operator<(const std::pair<T1,T2>& lhs, const std::pair<T1,T2>& rhs)
 }
 
 template<class T1, class T2>
-inline bool operator<=(const std::pair<T1,T2>& lhs, const std::pair<T1,T2>& rhs)
+inline bool operator<=(const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
 {
     return !(rhs < lhs);
 }
 
 template<class T1, class T2>
-inline bool operator>(const std::pair<T1,T2>& lhs, const std::pair<T1,T2>& rhs)
+inline bool operator>(const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
 {
     return rhs < lhs;
 }
 
 template<class T1, class T2>
-inline bool operator>=(const std::pair<T1,T2>& lhs, const std::pair<T1,T2>& rhs)
+inline bool operator>=(const pair<T1,T2>& lhs, const pair<T1,T2>& rhs)
 {
     return !(lhs < rhs);
 }

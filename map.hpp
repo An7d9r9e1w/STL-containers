@@ -3,6 +3,7 @@
 
 #include "tree/tree.hpp"
 #include "functional.hpp"
+#include "algorithm.hpp"
 
 namespace ft
 {
@@ -37,21 +38,20 @@ public:
     typedef typename _tree_type::size_type              size_type;
     typedef typename _tree_type::difference_type        difference_type;
 
-private:
     class value_compare : ft::binary_function<value_type, value_type, bool>
     {
     private:
-        friend class map;
+        friend class map<Key, T, Compare, Allocator>;
 
     protected:
         Compare comp;
+
         value_compare(Compare c)
             : comp(c)
         {}
 
     public:
-        bool
-        operator()(const value_type& lhs,
+        bool operator()(const value_type& lhs,
                    const value_type& rhs) const
         {
             return comp(lhs.first, rhs.first);
@@ -230,51 +230,31 @@ public:
     /// non-member functions
     friend bool
     operator==(const map& lhs, const map& rhs)
-    {
-        if (lhs.size_ != rhs.size_) return false;
-        return ft::equal(lhs.begin(), lhs.end(),
-                         rhs.begin(), value_comp());
-    }
+    { return lhs._tree == rhs._tree; }
 
     friend bool
     operator!=(const map& lhs, const map& rhs)
-    {
-        return !(lhs == rhs);
-    }
+    { return !(lhs == rhs); }
 
     friend bool
     operator<(const map& lhs, const map& rhs)
-    {
-        return lexicographical_compare(lhs.begin(), lhs.end(),
-                                       rhs.begin(), rhs.end(),
-                                       value_comp());
-    }
+    { return lhs._tree < rhs._tree; }
 
     friend bool
     operator<=(const map& lhs, const map& rhs)
-    {
-        return lhs == rhs || lexicographical_compare(lhs.begin(), lhs.end(),
-                                                     rhs.begin(), rhs.end(),
-                                                     value_comp());
-    }
+    { return lhs._tree <= rhs._tree; }
 
     friend bool
     operator>(const map& lhs, const map& rhs)
-    {
-        return !(lhs < rhs);
-    }
+    { return !(lhs <= rhs); }
 
     friend bool
     operator>=(const map& lhs, const map& rhs)
-    {
-        return !(lhs <= rhs);
-    }
+    { return !(lhs < rhs); }
 
     friend void
     swap(map& lhs, map& rhs)
-    {
-        lhs.swap(rhs);
-    }
+    { lhs.swap(rhs); }
 
 private:
     _tree_type _tree;

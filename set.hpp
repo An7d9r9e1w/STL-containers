@@ -201,51 +201,31 @@ public:
     /// non-member functions
     friend bool
     operator==(const set& lhs, const set& rhs)
-    {
-        if (lhs.size_ != rhs.size_) return false;
-        return ft::equal(lhs.begin(), lhs.end(),
-                         rhs.begin(), value_comp());
-    }
+    { return lhs._tree == rhs._tree; }
 
     friend bool
     operator!=(const set& lhs, const set& rhs)
-    {
-        return !(lhs == rhs);
-    }
+    { return !(lhs == rhs); }
 
     friend bool
     operator<(const set& lhs, const set& rhs)
-    {
-        return lexicographical_compare(lhs.begin(), lhs.end(),
-                                       rhs.begin(), rhs.end(),
-                                       value_comp());
-    }
+    { return lhs._tree < rhs._tree; }
 
     friend bool
     operator<=(const set& lhs, const set& rhs)
-    {
-        return lhs == rhs || lexicographical_compare(lhs.begin(), lhs.end(),
-                                                     rhs.begin(), rhs.end(),
-                                                     value_comp());
-    }
+    { return lhs._tree <= rhs._tree; }
 
     friend bool
     operator>(const set& lhs, const set& rhs)
-    {
-        return !(lhs < rhs);
-    }
+    { return !(lhs <= rhs); }
 
     friend bool
     operator>=(const set& lhs, const set& rhs)
-    {
-        return !(lhs <= rhs);
-    }
+    { return !(lhs < rhs); }
 
     friend void
     swap(set& lhs, set& rhs)
-    {
-        lhs.swap(rhs);
-    }
+    { lhs.swap(rhs); }
 
 private:
     _tree_type _tree;

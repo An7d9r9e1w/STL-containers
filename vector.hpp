@@ -56,9 +56,9 @@ public:
                      const allocator_type& alloc = allocator_type());
     /// range constructor
     template <class InputIterator>
-        vector (InputIterator first, InputIterator last,
-                const allocator_type& alloc = allocator_type(),
-                typename ft::enable_if<ft::is_iterator<InputIterator>::value, bool>::type = 0);
+    vector (InputIterator first, InputIterator last,
+            const allocator_type& alloc = allocator_type(),
+            typename ft::enable_if<ft::is_iterator<InputIterator>::value, bool>::type = 0);
     /// copy constructor
     vector (const vector& x);
 
@@ -67,8 +67,9 @@ public:
 public:
     vector& operator=(const vector& other);
     template <class InputIterator>
-        void assign(InputIterator first, InputIterator last,
-                    typename ft::enable_if<ft::is_iterator<InputIterator>::value, bool>::type = 0);
+    void assign(InputIterator first, InputIterator last,
+                typename ft::enable_if<
+                ft::is_iterator<InputIterator>::value, bool>::type = 0);
     void assign(size_type count, const value_type& val);
     allocator_type get_allocator() const;
 
@@ -107,6 +108,10 @@ public:
     void     clear();
     iterator insert(iterator pos, const value_type& value);
     void     insert(iterator pos, size_type count, const T& value);
+    template <class InputIterator>
+    void     insert(iterator pos, InputIterator first, InputIterator last,
+                    typename ft::enable_if<
+                    ft::is_iterator<InputIterator>::value, bool>::type = 0);
     iterator erase(iterator pos);
     iterator erase(iterator first, iterator last);
     void     push_back(const T& value);
@@ -116,26 +121,26 @@ public:
 
     /// non-member functions
     template <class U, class Alloc>
-        friend bool operator==(const vector<U,Alloc>& lhs,
-                               const vector<U,Alloc>& rhs);
+    friend bool operator==(const vector<U,Alloc>& lhs,
+                           const vector<U,Alloc>& rhs);
     template <class U, class Alloc>
-        friend bool operator!=(const vector<U,Alloc>& lhs,
-                               const vector<U,Alloc>& rhs);
+    friend bool operator!=(const vector<U,Alloc>& lhs,
+                           const vector<U,Alloc>& rhs);
     template <class U, class Alloc>
-        friend bool operator< (const vector<U,Alloc>& lhs,
-                               const vector<U,Alloc>& rhs);
+    friend bool operator< (const vector<U,Alloc>& lhs,
+                           const vector<U,Alloc>& rhs);
     template <class U, class Alloc>
-        friend bool operator<=(const vector<U,Alloc>& lhs,
-                               const vector<U,Alloc>& rhs);
+    friend bool operator<=(const vector<U,Alloc>& lhs,
+                           const vector<U,Alloc>& rhs);
     template <class U, class Alloc>
-        friend bool operator> (const vector<U,Alloc>& lhs,
-                               const vector<U,Alloc>& rhs);
+    friend bool operator> (const vector<U,Alloc>& lhs,
+                           const vector<U,Alloc>& rhs);
     template <class U, class Alloc>
-        friend bool operator>=(const vector<U,Alloc>& lhs,
-                               const vector<U,Alloc>& rhs);
+    friend bool operator>=(const vector<U,Alloc>& lhs,
+                           const vector<U,Alloc>& rhs);
 
     template <class U, class Alloc>
-        friend void swap(vector<U,Alloc>& lhs, vector<U,Alloc>& rhs);
+    friend void swap(vector<U,Alloc>& lhs, vector<U,Alloc>& rhs);
 
 private:
     void realloc_(size_type count, size_type pos = 0, difference_type shift = 0);
@@ -154,7 +159,7 @@ private:
 
 /// vector
 template <class T, class Allocator>
-vector<T, Allocator>::vector (const allocator_type& alloc)
+vector<T, Allocator>::vector(const allocator_type& alloc)
     : alloc_(alloc),
     arr_(NULL),
     size_(0),
@@ -163,7 +168,7 @@ vector<T, Allocator>::vector (const allocator_type& alloc)
 }
 
 template <class T, class Allocator>
-vector<T, Allocator>::vector (size_type n, const value_type& val, const allocator_type& alloc)
+vector<T, Allocator>::vector(size_type n, const value_type& val, const allocator_type& alloc)
     : alloc_(alloc),
     arr_(NULL),
     size_(0),
@@ -174,7 +179,7 @@ vector<T, Allocator>::vector (size_type n, const value_type& val, const allocato
 
 template <class T, class Allocator>
     template <class InputIterator>
-vector<T, Allocator>::vector (InputIterator first, InputIterator last, const allocator_type& alloc,
+vector<T, Allocator>::vector(InputIterator first, InputIterator last, const allocator_type& alloc,
     typename enable_if<is_iterator<InputIterator>::value, bool>::type)
     : alloc_(alloc),
     arr_(NULL),
@@ -185,7 +190,7 @@ vector<T, Allocator>::vector (InputIterator first, InputIterator last, const all
 }
 
 template <class T, class Allocator>
-vector<T, Allocator>::vector (const vector& x)
+vector<T, Allocator>::vector(const vector& x)
     : alloc_(x.alloc_),
     arr_(NULL),
     size_(0),
@@ -220,13 +225,20 @@ void vector<T, Allocator>::assign(InputIterator first, InputIterator last,
     typename enable_if<is_iterator<InputIterator>::value, bool>::type)
 {
     size_type n = 0;
+    size_type i = 0;
     for (InputIterator it(first); it != last; ++it)
         ++n;
-    clear();
     if (n > capacity_) realloc_(n);
-    for ( ; first != last; ++first)
-        alloc_.construct(arr_++, *first);
-    arr_ -= n;
+    for ( ; i < n && i < size_; ++i, ++first)
+    {
+        value_type tmp(*first);
+        alloc_.destroy(arr_ + i);
+        alloc_.construct(arr_ + i, tmp);
+    }
+    for ( ; i < n; ++i, ++first)
+        alloc_.construct(arr_ + i, *first);
+    for ( ; i < size_; ++i)
+        alloc_.destroy(arr_ + i);
     size_ = n;
 }
 
@@ -418,9 +430,31 @@ void vector<T, Allocator>::insert(iterator pos, size_type count, const T& value)
     difference_type shift = &*pos - arr_;
     bool realloced = reallocHelper_(count, shift, count);
     pointer target = arr_ + shift;
-    if (!realloced) move_(target + count, target, size_ - shift);
+    if (count && !realloced) move_(target + count, target, size_ - shift);
     for (size_type i = 0; i < count; ++i)
         alloc_.construct(target + i, value);
+    size_ += count;
+}
+
+template <class T, class Allocator>
+    template <class InputIterator>
+void vector<T, Allocator>::insert(iterator pos, InputIterator first,
+    InputIterator last, typename ft::enable_if<
+    ft::is_iterator<InputIterator>::value, bool>::type)
+{
+    size_type count = 0;
+    for (InputIterator i = first; i != last; ++i)
+        ++count;
+
+    difference_type shift = &*pos - arr_;
+    bool realloced = reallocHelper_(count, shift, count);
+    pointer target = arr_ + shift;
+    if (count && !realloced) move_(target + count, target, size_ - shift);
+    for (size_type i = 0; i < count; ++i)
+    {
+        alloc_.construct(target + i, *first);
+        ++first;
+    }
     size_ += count;
 }
 
@@ -430,7 +464,7 @@ vector<T, Allocator>::erase(iterator pos)
 {
     pointer target = &*pos;
     alloc_.destroy(target);
-    move_(target, target + 1, --size_ - (arr_ - target));
+    move_(target, target + 1, --size_ + arr_ - target);
     return pos;
 }
 
@@ -444,7 +478,7 @@ vector<T, Allocator>::erase(iterator first, iterator last)
         for (size_type i = 0; i < len; ++i)
             alloc_.destroy(target + i);
         size_ -= len;
-        move_(target, target + len, size_ - (arr_ - target));
+        move_(target, target + len, size_ + arr_ - target);
     }
     return first;
 }
@@ -501,27 +535,27 @@ inline bool operator!=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 template <class T, class Alloc>
 inline bool operator<(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
-    return lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
-                                   rhs.arr_, rhs.arr_ + rhs.size_);
+    return ft::lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
+                                       rhs.arr_, rhs.arr_ + rhs.size_);
 }
 
 template <class T, class Alloc>
 inline bool operator<=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
-    return lhs == rhs || lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
-                                                 rhs.arr_, rhs.arr_ + rhs.size_);
+    return lhs == rhs || ft::lexicographical_compare(lhs.arr_, lhs.arr_ + lhs.size_,
+                                                     rhs.arr_, rhs.arr_ + rhs.size_);
 }
 
 template <class T, class Alloc>
 inline bool operator>(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
-    return !(lhs < rhs);
+    return !(lhs <= rhs);
 }
 
 template <class T, class Alloc>
 inline bool operator>=(const vector<T,Alloc>& lhs,const vector<T,Alloc>& rhs)
 {
-    return !(lhs <= rhs);
+    return !(lhs < rhs);
 }
 
 template <class T, class Alloc>
@@ -564,14 +598,15 @@ inline void vector<T, Allocator>::destroy_()
 template <class T, class Allocator>
 bool vector<T, Allocator>::reallocHelper_(size_type count, size_type pos, difference_type shift)
 {
+    if (!count) return false;
     if (!capacity_) {
         realloc_(count, pos, shift);
         return true;
     } else if (size_ + count > capacity_) {
-        if (size_ + count > (capacity_ << 1))
-            realloc_(size_ + count, pos, shift);
-        else
+        if (count == 1)
             realloc_(capacity_ << 1, pos, shift);
+        else
+            realloc_(size_ + count, pos, shift);
         return true;
     }
     return false;
