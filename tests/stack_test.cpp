@@ -118,6 +118,23 @@ TYPED_TEST_P(StackTest, AssignOperator)
     COMPARE_TEST(ft_stack2, std_stack2);
 }
 
+TYPED_TEST_P(StackTest, DefaultConstructor)
+{
+    ft::vector<typename TestFixture::value_type> v;
+    v.reserve(TestFixture::size);
+
+    for (size_t i = 0; i < TestFixture::size; ++i)
+    {
+        v.push_back(this->gen.get());
+        this->gen.next();
+    }
+
+    typename TestFixture::std_stack_type std_stack(v);
+    typename TestFixture::ft_stack_type ft_stack(v);
+
+    COMPARE_TEST(ft_stack, std_stack);
+}
+
 TYPED_TEST_P(StackTest, CopyConstructor)
 {
     this->init();
@@ -216,6 +233,7 @@ REGISTER_TYPED_TEST_SUITE_P(StackTest,
     Capacity,
     TypeDefs,
     AssignOperator,
+    DefaultConstructor,
     CopyConstructor,
     Top,
     Push,

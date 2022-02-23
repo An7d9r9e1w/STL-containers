@@ -55,7 +55,7 @@ public:
     friend bool operator>=(const ft::stack<U,Cont>& lhs,
                            const ft::stack<U,Cont>& rhs);
 
-private:
+protected:
     Container c;
 };
 
@@ -63,7 +63,7 @@ private:
 
 template<class T, class Container>
 stack<T, Container>::stack(const Container& cont)
-    : c(Container())
+    : c(cont)
 {
 }
 
