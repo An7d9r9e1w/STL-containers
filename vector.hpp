@@ -6,7 +6,7 @@
 /*   By: nnamor <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 15:51:52 by nnamor            #+#    #+#             */
-/*   Updated: 2022/02/02 19:22:25 by nnamor           ###   ########.fr       */
+/*   Updated: 2022/02/23 09:56:27 by nnamor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -499,12 +499,11 @@ void vector<T, Allocator>::pop_back()
 template <class T, class Allocator>
 void vector<T, Allocator>::resize(size_type count, value_type value)
 {
-    if (count > capacity_) realloc_(count);
+    reallocHelper_(count - size_);
     while (size_ > count)
         alloc_.destroy(arr_ + --size_);
-    while (size_ < count) {
+    while (size_ < count)
         alloc_.construct(arr_ + size_++, value);
-    }
 }
 
 template <class T, class Allocator>
@@ -603,7 +602,11 @@ bool vector<T, Allocator>::reallocHelper_(size_type count, size_type pos, differ
         realloc_(count, pos, shift);
         return true;
     } else if (size_ + count > capacity_) {
+#ifdef __clang__
+        if (count + size_ < capacity_ << 1)
+#else
         if (count == 1)
+#endif // __clang__
             realloc_(capacity_ << 1, pos, shift);
         else
             realloc_(size_ + count, pos, shift);

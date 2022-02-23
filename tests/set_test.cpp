@@ -170,6 +170,20 @@ TYPED_TEST_P(SetTest, Iterator)
     --std_begin;
     --ft_begin;
 
+#ifdef __clang__
+
+    while (std_begin != this->std_set.begin())
+    {
+        ASSERT_NE(ft_begin, this->ft_set.begin());
+        ASSERT_EQ(*std_begin, *ft_begin);
+        --std_begin;
+        --ft_begin;
+    }
+    ASSERT_EQ(*std_begin, *ft_begin);
+    ASSERT_EQ(ft_begin, this->ft_set.begin());
+
+#else
+
     while (std_begin != std_end)
     {
         ASSERT_NE(ft_begin, ft_end);
@@ -179,6 +193,8 @@ TYPED_TEST_P(SetTest, Iterator)
     }
 
     ASSERT_EQ(ft_begin, ft_end);
+
+#endif // __clang__
 }
 
 TYPED_TEST_P(SetTest, ReverseIterator)
@@ -364,9 +380,12 @@ TYPED_TEST_P(SetTest, EraseRange)
     COMPARE_TEST(this->ft_set, this->std_set);
 
     if (TestFixture::size < 4) return;
+
+#ifndef __clang__
     this->std_set.erase(++this->std_set.begin(), --this->std_set.begin());
     this->ft_set.erase(++this->ft_set.begin(), --this->ft_set.begin());
     COMPARE_TEST(this->ft_set, this->std_set);
+#endif // __clang__
 
     this->std_set.erase(this->std_set.begin(), this->std_set.end());
     this->ft_set.erase(this->ft_set.begin(), this->ft_set.end());

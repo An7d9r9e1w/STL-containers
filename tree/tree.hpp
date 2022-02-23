@@ -25,10 +25,15 @@ struct _Rb_tree_node_base
     typedef _Rb_tree_node_base*       base_ptr;
     typedef const _Rb_tree_node_base* const_base_ptr;
 
-    _Rb_tree_color color;
+// clang implementation use tail padding
+#ifdef __clang__
+    _Rb_tree_node_base() {}
+#endif // __clang__
+
     base_ptr       parent;
     base_ptr       left;
     base_ptr       right;
+    _Rb_tree_color color;
 
     static base_ptr minimum(base_ptr x)
     {

@@ -184,6 +184,22 @@ TYPED_TEST_P(MapTest, Iterator)
     --std_begin;
     --ft_begin;
 
+#ifdef __clang__
+
+    while (std_begin != this->std_map.begin())
+    {
+        ASSERT_NE(ft_begin, this->ft_map.begin());
+        ASSERT_EQ(std_begin->first == ft_begin->first
+                && std_begin->second == ft_begin->second, true);
+        --std_begin;
+        --ft_begin;
+    }
+    ASSERT_EQ(std_begin->first == ft_begin->first
+            && std_begin->second == ft_begin->second, true);
+    ASSERT_EQ(ft_begin, this->ft_map.begin());
+
+#else
+
     while (std_begin != std_end)
     {
         ASSERT_NE(ft_begin, ft_end);
@@ -194,6 +210,8 @@ TYPED_TEST_P(MapTest, Iterator)
     }
 
     ASSERT_EQ(ft_begin, ft_end);
+
+#endif // __clang__
 }
 
 TYPED_TEST_P(MapTest, ReverseIterator)
@@ -426,9 +444,12 @@ TYPED_TEST_P(MapTest, EraseRange)
     COMPARE_TEST(this->ft_map, this->std_map);
 
     if (TestFixture::size < 4) return;
+
+#ifndef __clang__
     this->std_map.erase(++this->std_map.begin(), --this->std_map.begin());
     this->ft_map.erase(++this->ft_map.begin(), --this->ft_map.begin());
     COMPARE_TEST(this->ft_map, this->std_map);
+#endif // __clang__
 
     this->std_map.erase(this->std_map.begin(), this->std_map.end());
     this->ft_map.erase(this->ft_map.begin(), this->ft_map.end());

@@ -2,6 +2,8 @@
 #include <typeinfo>
 #include "test_types.h"
 
+#include <iostream>
+
 /// defines
 
 #define COMPARE_TEST(ft_vec, std_vec) \
